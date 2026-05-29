@@ -99,7 +99,7 @@ export default async function LandingPage() {
         {/* Huge centered Title */}
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-[1.08] max-w-4xl font-sans animate-fade-in-up delay-100">
           Complete control over your <br />
-          <span className="bg-gradient-to-b from-white to-purple-500 bg-clip-text text-transparent">sales & operations</span>
+          <span className="bg-linear-to-b from-white to-purple-500 bg-clip-text text-transparent">sales & operations</span>
         </h1>
 
         {/* Centered Tagline */}
@@ -130,11 +130,11 @@ export default async function LandingPage() {
         >
           
           {/* Ambient inner purple bottom glow */}
-          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#8B5CF6]/35 to-transparent blur-xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-48 bg-linear-to-t from-[#8B5CF6]/35 to-transparent blur-xl pointer-events-none" />
 
           {/* Centered Dashboard Mockup: Pure image without browser shell, pushed downwards */}
           <div 
-            className="relative z-10 w-[90%] md:w-[85%] lg:w-[80%] mx-auto mt-16 md:mt-28 mb-0 rounded-t-xl overflow-hidden border-t border-x border-white/[0.08] shadow-2xl transition-all duration-500 hover:border-purple-500/20 bg-neutral-950"
+            className="relative z-10 w-[90%] md:w-[85%] lg:w-[80%] mx-auto mt-16 md:mt-28 mb-0 rounded-t-xl overflow-hidden border-t border-x border-white/8 shadow-2xl transition-all duration-500 hover:border-purple-500/20 bg-neutral-950"
           >
             <img 
               src="/dashboard.png" 
@@ -149,7 +149,7 @@ export default async function LandingPage() {
       </div>
 
       {/* ── ABOUT SALES OS SECTION ──────────────────────────────────────── */}
-      <section id="about" className="relative z-10 max-w-4xl mx-auto px-6 py-24 border-t border-white/[0.04] text-center flex flex-col items-center">
+      <section id="about" className="relative z-10 max-w-4xl mx-auto px-6 py-24 border-t border-white/4 text-center flex flex-col items-center">
         <p className="text-xs font-bold text-purple-400 tracking-widest uppercase font-mono">
           About Sales OS
         </p>
@@ -170,7 +170,7 @@ export default async function LandingPage() {
       </section>
 
       {/* ── 2. PLATFORM OVERVIEW ───────────────────────────────────────── */}
-      <section id="features" className="relative z-10 max-w-5xl mx-auto px-6 py-24 border-t border-white/[0.04]">
+      <section id="features" className="relative z-10 max-w-5xl mx-auto px-6 py-24 border-t border-white/4">
         
         <div className="text-center max-w-2xl mx-auto mb-16">
           <p className="text-xs font-bold text-purple-400 tracking-widest uppercase font-mono">Platform Capabilities</p>
@@ -184,7 +184,7 @@ export default async function LandingPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           
-          <div className="group p-5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.05] hover:border-purple-500/20 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-500/5 cursor-pointer transition-all duration-300 flex flex-col items-start text-left">
+          <div className="group p-5 rounded-2xl bg-white/2 hover:bg-white/4 border border-white/5 hover:border-purple-500/20 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-500/5 cursor-pointer transition-all duration-300 flex flex-col items-start text-left">
             <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform duration-300">
               <Users className="w-5 h-5 text-purple-400" />
             </div>
@@ -194,7 +194,7 @@ export default async function LandingPage() {
             </p>
           </div>
 
-          <div className="group p-5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.05] hover:border-purple-500/20 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-500/5 cursor-pointer transition-all duration-300 flex flex-col items-start text-left">
+          <div className="group p-5 rounded-2xl bg-white/2 hover:bg-white/4 border border-white/5 hover:border-purple-500/20 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-500/5 cursor-pointer transition-all duration-300 flex flex-col items-start text-left">
             <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform duration-300">
               <Building2 className="w-5 h-5 text-purple-400" />
             </div>
@@ -204,7 +204,7 @@ export default async function LandingPage() {
             </p>
           </div>
 
-          <div className="group p-5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.05] hover:border-purple-500/20 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-500/5 cursor-pointer transition-all duration-300 flex flex-col items-start text-left">
+          <div className="group p-5 rounded-2xl bg-white/2 hover:bg-white/4 border border-white/5 hover:border-purple-500/20 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-500/5 cursor-pointer transition-all duration-300 flex flex-col items-start text-left">
             <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform duration-300">
               <FolderGit2 className="w-5 h-5 text-purple-400" />
             </div>
@@ -214,7 +214,7 @@ export default async function LandingPage() {
             </p>
           </div>
 
-          <div className="group p-5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.05] hover:border-purple-500/20 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-500/5 cursor-pointer transition-all duration-300 flex flex-col items-start text-left">
+          <div className="group p-5 rounded-2xl bg-white/2 hover:bg-white/4 border border-white/5 hover:border-purple-500/20 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-500/5 cursor-pointer transition-all duration-300 flex flex-col items-start text-left">
             <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform duration-300">
               <LineChart className="w-5 h-5 text-purple-400" />
             </div>
@@ -229,10 +229,10 @@ export default async function LandingPage() {
       </section>
 
       {/* ── FOOTER ────────────────────────────────────────────────────── */}
-      <footer className="relative z-10 bg-black pt-20 pb-12 border-t border-white/[0.04] text-xs text-muted-foreground">
+      <footer className="relative z-10 bg-black pt-20 pb-12 border-t border-white/4 text-xs text-muted-foreground">
         
         {/* Glow point behind divider */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-[1px] bg-gradient-to-r from-transparent via-purple-500/40 to-transparent" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-px bg-linear-to-r from-transparent via-purple-500/40 to-transparent" />
         
         <div className="max-w-5xl mx-auto px-6 pb-12 flex justify-center items-center">
           
@@ -251,7 +251,7 @@ export default async function LandingPage() {
         </div>
 
         {/* Gigantic Footer Text */}
-        <div className="w-full overflow-hidden mt-16 pointer-events-none select-none border-t border-white/[0.02] pt-8 flex justify-center items-center animate-signature">
+        <div className="w-full overflow-hidden mt-16 pointer-events-none select-none border-t border-white/2 pt-8 flex justify-center items-center animate-signature">
           <div className="relative text-center w-full px-8 md:px-16 pb-2">
             
             {/* Copyright/Metadata label bottom-left */}
@@ -268,20 +268,20 @@ export default async function LandingPage() {
             <div className="flex flex-row items-baseline justify-center whitespace-nowrap w-full relative">
               <div className="relative inline-block">
                 {/* "THE" label top-left */}
-                <div className="absolute -top-[15%] left-[1%] md:top-[2%] md:left-[1vw] text-left">
-                  <span className="text-[1.2vw] md:text-[1.1vw] font-semibold uppercase tracking-[0.7em] select-none font-clash bg-gradient-to-b from-white to-purple-500 bg-clip-text text-transparent">
+                <div className="absolute top-[-15%] left-[1%] md:top-[2%] md:left-[1vw] text-left">
+                  <span className="text-[1.2vw] md:text-[1.1vw] font-semibold uppercase tracking-[0.7em] select-none font-clash bg-linear-to-b from-white to-purple-500 bg-clip-text text-transparent">
                     THE
                   </span>
                 </div>
 
                 {/* Main MERGEX heading */}
-                <h2 className="text-[19vw] md:text-[20vw] leading-none font-semibold tracking-widest select-none font-clash uppercase relative text-center bg-gradient-to-b from-white to-purple-500 bg-clip-text text-transparent">
+                <h2 className="text-[19vw] md:text-[20vw] leading-none font-semibold tracking-widest select-none font-clash uppercase relative text-center bg-linear-to-b from-white to-purple-500 bg-clip-text text-transparent">
                   MERGEX
                 </h2>
 
                 {/* "COMPANY" label bottom-right */}
-                <div className="absolute -bottom-[5%] right-[2%] md:bottom-[-1.5%] md:right-[2.5vw] text-right">
-                  <span className="text-[1.5vw] md:text-[1.6vw] font-semibold uppercase tracking-[0.6em] select-none font-clash bg-gradient-to-b from-white to-purple-500 bg-clip-text text-transparent" style={{ marginRight: '-0.6em' }}>
+                <div className="absolute bottom-[-5%] right-[2%] md:bottom-[-1.5%] md:right-[2.5vw] text-right">
+                  <span className="text-[1.5vw] md:text-[1.6vw] font-semibold uppercase tracking-[0.6em] select-none font-clash bg-linear-to-b from-white to-purple-500 bg-clip-text text-transparent" style={{ marginRight: '-0.6em' }}>
                     COMPANY
                   </span>
                 </div>

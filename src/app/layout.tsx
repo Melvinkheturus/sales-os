@@ -1,18 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Cormorant_Garamond } from "next/font/google";
-import {
-  ClerkProvider,
-  Show,
-  UserButton,
-  SignInButton,
-  SignUpButton,
-} from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
+import { AppProvider } from "@/providers/AppProvider";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 import "./globals.css";
 
+// ── Font Loading (rule: server-side, swap avoids FOIT) ────────────────────
 const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
+  preload: true,
 });
 
 const cormorant = Cormorant_Garamond({
@@ -20,11 +18,13 @@ const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
+  preload: false, // decorative only — non-critical
 });
 
-// ── SEO & Open Graph ──────────────────────────────────────
+// ── App URL ───────────────────────────────────────────────────────────────
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://cx.mergex.in";
 
+// ── SEO & Open Graph metadata ─────────────────────────────────────────────
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
 
@@ -63,12 +63,10 @@ export const metadata: Metadata = {
     googleBot: { index: false, follow: false },
   },
 
-  // Canonical
   alternates: {
     canonical: APP_URL,
   },
 
-  // Open Graph
   openGraph: {
     type: "website",
     url: APP_URL,
@@ -87,7 +85,6 @@ export const metadata: Metadata = {
     locale: "en_IN",
   },
 
-  // Twitter / X Card
   twitter: {
     card: "summary_large_image",
     title: "MergeX Sales OS",
@@ -96,7 +93,6 @@ export const metadata: Metadata = {
     creator: "@mergex",
   },
 
-  // Favicon
   icons: {
     icon: [
       { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
@@ -111,14 +107,12 @@ export const metadata: Metadata = {
     ],
   },
 
-  // Web app manifest
   manifest: "/favicon/site.webmanifest",
-
-  // App metadata
   applicationName: "MergeX Sales OS",
   category: "Business",
 };
 
+// ── Viewport ──────────────────────────────────────────────────────────────
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
@@ -129,10 +123,7 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-// ── Root Layout ───────────────────────────────────────────
-
-import { AppProvider } from "@/providers/AppProvider";
-
+// ── Root Layout ───────────────────────────────────────────────────────────
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -141,13 +132,19 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Preconnect to speed up Google Fonts */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
-        {/* Clash Display - loaded via Fontshare CDN */}
+        {/*
+          Fontshare (Clash Display) — preconnect + preload the stylesheet
+          so the browser fetches it in parallel with page HTML (non-blocking).
+          rel="preload" as="style" + onload trick is avoided here because
+          Next.js handles critical CSS; we just need the connection early.
+        */}
         <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://api.fontshare.com" />
+        <link
+          rel="preload"
+          as="style"
+          href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap"
+        />
         <link
           rel="stylesheet"
           href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap"
@@ -156,25 +153,20 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${cormorant.variable} font-sans antialiased text-foreground`}
       >
-        <AppProvider>
-          <ClerkProvider>
-            {/* Auth-aware global header — only visible on non-dashboard public routes */}
-            <Show when="signed-out">
-              <header className="sr-only" aria-hidden>
-                <SignInButton />
-                <SignUpButton />
-              </header>
-            </Show>
-            <Show when="signed-in">
-              <header className="sr-only" aria-hidden>
-                <UserButton />
-              </header>
-            </Show>
-            {children}
-          </ClerkProvider>
-        </AppProvider>
+        {/*
+          Provider order (outer → inner):
+          1. ClerkProvider  — auth context available to everything
+          2. AppProvider    — ThemeProvider + TooltipProvider + Toaster
+          3. {children}     — page content streams in
+        */}
+        <ClerkProvider>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+            <AppProvider>
+              {children}
+            </AppProvider>
+          </ThemeProvider>
+        </ClerkProvider>
       </body>
     </html>
   );
 }
-

@@ -1,30 +1,14 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Building2, ChevronDown, Check, Layers, LayoutGrid, Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
+import { Building2, ChevronDown, Check, LayoutGrid, Plus } from "lucide-react";
+import { useRouter, useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export interface BrandOption {
   id: string;
   name: string;
   slug: string;
-}
-
-// Simple client-side brand context — stored in localStorage
-const STORAGE_KEY = "mergex_active_brand";
-
-export function getActiveBrandId(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(STORAGE_KEY);
-}
-
-export function setActiveBrandId(id: string | null) {
-  if (typeof window === "undefined") return;
-  if (id === null) localStorage.removeItem(STORAGE_KEY);
-  else localStorage.setItem(STORAGE_KEY, id);
-  // Dispatch custom event so other components can react
-  window.dispatchEvent(new CustomEvent("mergex:brand-changed", { detail: { brandId: id } }));
 }
 
 // ── Brand avatar color palette ─────────────────────────────────────────────
@@ -52,24 +36,14 @@ function getBrandAvatarColor(index: number): string {
 // ── Component ─────────────────────────────────────────────────────────────
 export function BrandSwitcher({ brands }: { brands: BrandOption[] }) {
   const router = useRouter();
+  const params = useParams();
+  const slug = params?.slug as string;
   const [open, setOpen] = useState(false);
-  const [activeBrandId, setActiveBrandIdState] = useState<string | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Hydrate from localStorage
-  useEffect(() => {
-    setActiveBrandIdState(getActiveBrandId());
-  }, []);
-
-  // Keep in sync with brand-changed events (e.g. from workspace selector)
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent<{ brandId: string | null }>).detail;
-      setActiveBrandIdState(detail.brandId);
-    };
-    window.addEventListener("mergex:brand-changed", handler);
-    return () => window.removeEventListener("mergex:brand-changed", handler);
-  }, []);
+  // Active brand derived from URL slug — URL is the canonical source of truth
+  const activeBrand = brands.find((b) => b.slug === slug) ?? null;
+  const activeBrandIndex = brands.findIndex((b) => b.slug === slug);
 
   // Close on outside click
   useEffect(() => {
@@ -80,18 +54,17 @@ export function BrandSwitcher({ brands }: { brands: BrandOption[] }) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const activeBrand = brands.find((b) => b.id === activeBrandId) ?? null;
-  const activeBrandIndex = brands.findIndex((b) => b.id === activeBrandId);
-
-  const select = (id: string | null) => {
-    setActiveBrandId(id);
-    setActiveBrandIdState(id);
-    // Cache brand name for sidebar pill
-    if (id) {
-      const brand = brands.find((b) => b.id === id);
-      if (brand) sessionStorage.setItem(`mergex_brand_name_${id}`, brand.name);
-    }
+  const select = async (id: string) => {
+    const brand = brands.find((b) => b.id === id);
+    if (!brand) return;
     setOpen(false);
+    // Persist active brand to DB
+    await fetch("/api/profile", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ activeBrandId: id }),
+    });
+    router.push(`/workspaces/${brand.slug}/dashboard`);
   };
 
   if (brands.length === 0) return null;
@@ -122,8 +95,8 @@ export function BrandSwitcher({ brands }: { brands: BrandOption[] }) {
           </>
         ) : (
           <>
-            <Layers className="w-3 h-3 text-muted-foreground shrink-0" />
-            <span className="text-muted-foreground">All Brands</span>
+            <Building2 className="w-3 h-3 text-muted-foreground shrink-0" />
+            <span className="text-muted-foreground">Select Brand</span>
           </>
         )}
         <ChevronDown
@@ -136,32 +109,13 @@ export function BrandSwitcher({ brands }: { brands: BrandOption[] }) {
 
       {open && (
         <div className="absolute top-10 left-0 z-50 min-w-[200px] bg-card/95 backdrop-blur-md border border-white/60 dark:border-white/5 rounded-xl shadow-xl overflow-hidden">
-          
+
           {/* Section header */}
           <div className="px-3 pt-2.5 pb-1">
             <p className="text-[9px] font-semibold text-muted-foreground/60 uppercase tracking-widest">
               Brand Workspaces
             </p>
           </div>
-
-          {/* All Brands option */}
-          <button
-            onClick={() => select(null)}
-            className="w-full flex items-center justify-between gap-3 px-3 py-2 text-xs hover:bg-muted/50 transition-colors text-left"
-          >
-            <div className="flex items-center gap-2.5">
-              <div className="w-5 h-5 rounded bg-muted flex items-center justify-center shrink-0">
-                <Layers className="w-3 h-3 text-muted-foreground" />
-              </div>
-              <div>
-                <p className="font-medium text-foreground leading-none">All Brands</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">Global view</p>
-              </div>
-            </div>
-            {activeBrandId === null && <Check className="w-3 h-3 text-[#8B5CF6] shrink-0" />}
-          </button>
-
-          <div className="border-t border-border/30 mx-3 my-1" />
 
           {/* Individual brands */}
           {brands.map((brand, i) => (
@@ -184,13 +138,13 @@ export function BrandSwitcher({ brands }: { brands: BrandOption[] }) {
                   <p className="text-[10px] text-muted-foreground font-mono mt-0.5">{brand.slug}</p>
                 </div>
               </div>
-              {activeBrandId === brand.id && <Check className="w-3 h-3 text-[#8B5CF6] shrink-0" />}
+              {activeBrand?.id === brand.id && <Check className="w-3 h-3 text-[#8B5CF6] shrink-0" />}
             </button>
           ))}
 
           <div className="border-t border-border/30 mx-3 my-1" />
 
-          {/* ── Workspace actions ──────────────────────────────────── */}
+          {/* Workspace actions */}
           <button
             onClick={() => { setOpen(false); router.push("/workspaces"); }}
             className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors text-left"
@@ -200,7 +154,7 @@ export function BrandSwitcher({ brands }: { brands: BrandOption[] }) {
           </button>
 
           <button
-            onClick={() => { setOpen(false); router.push("/dashboard/settings"); }}
+            onClick={() => { setOpen(false); router.push(activeBrand ? `/workspaces/${activeBrand.slug}/settings` : "/workspaces"); }}
             className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors text-left"
           >
             <Plus className="w-3.5 h-3.5 shrink-0" />

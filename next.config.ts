@@ -19,7 +19,6 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
-        pathname: "/dlrexzxmx/**",
       },
     ],
   },
@@ -92,7 +91,13 @@ const nextConfig: NextConfig = {
   // ── Experimental ─────────────────────────────────────────
   experimental: {
     // Optimize package imports
-    optimizePackageImports: ["lucide-react", "recharts"],
+    optimizePackageImports: [
+      "lucide-react",
+      "recharts",
+      "sonner",
+      "date-fns",
+      "@radix-ui/react-icons",
+    ],
   },
 
   // ── Typescript ────────────────────────────────────────────

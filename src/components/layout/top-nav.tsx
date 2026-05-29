@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 import { useUser, useClerk } from "@clerk/nextjs";
 import Link from "next/link";
 import { Search, Menu } from "lucide-react";
@@ -30,6 +30,8 @@ function formatBreadcrumb(pathname: string): string {
 
 export function TopNav() {
   const pathname = usePathname();
+  const params = useParams();
+  const slug = params?.slug as string;
   const pageTitle = formatBreadcrumb(pathname);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [brands, setBrands] = useState<BrandOption[]>([]);
@@ -123,6 +125,8 @@ function ProfileMenu() {
   const { signOut } = useClerk();
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const params = useParams();
+  const slug = params?.slug as string;
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
@@ -185,7 +189,7 @@ function ProfileMenu() {
             </Link>
             
             <Link
-              href="/dashboard/settings"
+              href={`/workspaces/${slug}/settings`}
               className="w-full flex items-center px-3.5 py-2 text-xs font-semibold text-foreground hover:bg-muted/50 transition-colors"
               onClick={() => setOpen(false)}
             >
@@ -193,7 +197,7 @@ function ProfileMenu() {
             </Link>
 
             <Link
-              href="/dashboard/settings"
+              href={`/workspaces/${slug}/settings`}
               className="w-full flex items-center px-3.5 py-2 text-xs font-semibold text-foreground hover:bg-muted/50 transition-colors"
               onClick={() => setOpen(false)}
             >

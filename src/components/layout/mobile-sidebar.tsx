@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 import { X, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,12 @@ interface MobileSidebarProps {
 
 export function MobileSidebar({ onClose }: MobileSidebarProps) {
   const pathname = usePathname();
+  const params = useParams();
+  const slug = params?.slug as string;
+
+  const getDynamicHref = (href: string) => {
+    return href.replace(/^\/dashboard/, `/workspaces/${slug}`);
+  };
 
   return (
     <div className="flex flex-col h-full bg-card border-r border-border/40">
@@ -48,15 +54,16 @@ export function MobileSidebar({ onClose }: MobileSidebarProps) {
             <ul className="space-y-0.5">
               {group.items.map((item) => {
                 const Icon = item.icon;
+                const dynamicHref = getDynamicHref(item.href);
                 const isActive =
                   item.href === "/dashboard"
-                    ? pathname === "/dashboard"
-                    : pathname.startsWith(item.href);
+                    ? pathname === dynamicHref
+                    : pathname.startsWith(dynamicHref);
 
                 return (
                   <li key={item.title}>
                     <Link
-                      href={item.href}
+                      href={dynamicHref}
                       onClick={onClose}
                       className={cn(
                         "flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold transition-colors",
@@ -79,11 +86,11 @@ export function MobileSidebar({ onClose }: MobileSidebarProps) {
       {/* Bottom Actions */}
       <div className="border-t border-border/30 p-3">
         <Link
-          href="/dashboard/settings"
+          href={`/workspaces/${slug}/settings`}
           onClick={onClose}
           className={cn(
             "flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors",
-            pathname.startsWith("/dashboard/settings") && "bg-[#8B5CF6]/5 text-[#8B5CF6]"
+            pathname.startsWith(`/workspaces/${slug}/settings`) && "bg-[#8B5CF6]/5 text-[#8B5CF6]"
           )}
         >
           <Settings className="h-4 w-4 shrink-0 text-muted-foreground/60" />

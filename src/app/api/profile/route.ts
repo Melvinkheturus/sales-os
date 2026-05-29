@@ -9,7 +9,7 @@ interface ProfileUpdateBody {
   designation: string;
   avatarUrl: string | null;
   theme?: string;
-  defaultBrandId?: string;
+  activeBrandId?: string;
 }
 
 export async function PUT(req: Request) {
@@ -20,7 +20,7 @@ export async function PUT(req: Request) {
 
   try {
     const body: ProfileUpdateBody = await req.json();
-    const { firstName, lastName, username, designation, avatarUrl, theme, defaultBrandId } = body;
+    const { firstName, lastName, username, designation, avatarUrl, theme, activeBrandId } = body;
 
     if (!firstName || !lastName || !username) {
       return NextResponse.json({ error: "First name, last name, and username are required" }, { status: 400 });
@@ -50,7 +50,7 @@ export async function PUT(req: Request) {
         designation: designation || null,
         avatarUrl: avatarUrl || null,
         theme: theme || dbUser.theme,
-        defaultBrandId: defaultBrandId || dbUser.defaultBrandId,
+        activeBrandId: activeBrandId || dbUser.activeBrandId,
       },
     });
 
@@ -58,5 +58,36 @@ export async function PUT(req: Request) {
   } catch (err: any) {
     console.error("[profile-update] error:", err);
     return NextResponse.json({ error: err.message || "Failed to update profile details. Please try again." }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await req.json();
+    const { activeBrandId, theme } = body;
+
+    const dbUser = await db.user.findUnique({ where: { clerkId: userId } });
+    if (!dbUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const data: Record<string, unknown> = {};
+    if (activeBrandId !== undefined) data.activeBrandId = activeBrandId;
+    if (theme !== undefined) data.theme = theme;
+
+    const updated = await db.user.update({
+      where: { id: dbUser.id },
+      data,
+    });
+
+    return NextResponse.json({ ok: true, user: updated });
+  } catch (err: any) {
+    console.error("[profile-patch] error:", err);
+    return NextResponse.json({ error: err.message || "Failed to update profile" }, { status: 500 });
   }
 }

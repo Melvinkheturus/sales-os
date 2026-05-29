@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
 
 // Public routes — accessible without authentication
 const isPublicRoute = createRouteMatcher([
@@ -30,7 +31,8 @@ export default clerkMiddleware(async (auth, request) => {
     if (onboardingState === "PROFILE_SETUP") {
       return NextResponse.redirect(new URL("/onboarding/profile", request.url));
     }
-    return NextResponse.redirect(new URL("/workspaces", request.url));
+    // COMPLETE — redirect directly to active brand workspace or hub
+    return NextResponse.redirect(await resolvePostLoginRedirect(userId, request.url));
   }
 
   // Always allow public routes
@@ -67,9 +69,31 @@ export default clerkMiddleware(async (auth, request) => {
   // onboardingState === "COMPLETE" or undefined (existing users before this feature)
   // Block access to onboarding routes once complete
   if (isOnboardingRoute(request)) {
-    return NextResponse.redirect(new URL("/workspaces", request.url));
+    return NextResponse.redirect(await resolvePostLoginRedirect(userId, request.url));
   }
 });
+
+// ── Resolve post-login destination from DB activeBrandId ──────────────────
+async function resolvePostLoginRedirect(clerkUserId: string, requestUrl: string): Promise<URL> {
+  try {
+    const user = await db.user.findUnique({
+      where: { clerkId: clerkUserId },
+      select: { activeBrandId: true },
+    });
+    if (user?.activeBrandId) {
+      const brand = await db.brand.findUnique({
+        where: { id: user.activeBrandId },
+        select: { slug: true, status: true },
+      });
+      if (brand && brand.status === "active") {
+        return new URL(`/workspaces/${brand.slug}/dashboard`, requestUrl);
+      }
+    }
+  } catch {
+    // DB unreachable during cold start — fall through to hub
+  }
+  return new URL("/workspaces", requestUrl);
+}
 
 export const config = {
   matcher: [

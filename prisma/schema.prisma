@@ -97,11 +97,12 @@ model Brand {
   logoUrl     String?
   color       String?  @default("violet")  // accent color token: violet|indigo|rose|amber|emerald|sky
   description String?                      // short workspace description shown on cards
+  status      String   @default("active")  // "active" | "archived" — never hard-delete
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  users     User[]       @relation("BrandUsers")
-  invites   UserInvite[]
+  invites    UserInvite[]
+  userAccess UserBrandAccess[]
 }
 
 // ── 5. User (Clerk Identity Mapping) ─────────────
@@ -120,10 +121,8 @@ model User {
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 
-  // Brand Division Context
-  defaultBrandId String?  // Active/default Workspace ID
-  brandId        String?
-  brand          Brand?   @relation("BrandUsers", fields: [brandId], references: [id], onDelete: SetNull)
+  // Active Brand Workspace (DB source of truth — no localStorage)
+  activeBrandId    String?         // ID of the currently active brand workspace
 
   // Workspace preferences
   theme            String?         @default("system")   // "light" | "dark" | "system"
@@ -132,9 +131,25 @@ model User {
   loginAudits   LoginAudit[]
   notifications Notification[]
   preference    NotificationPreference?
+  brandAccess   UserBrandAccess[]
 
   @@index([clerkId])
   @@index([roleId])
+}
+
+// ── 5a. User ↔ Brand Access Control ──────────────
+model UserBrandAccess {
+  id        String   @id @default(cuid())
+  userId    String
+  brandId   String
+  grantedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  brand Brand @relation(fields: [brandId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, brandId])
+  @@index([userId])
+  @@index([brandId])
 }
 
 // ── 6. Invitation System ────────────────────────

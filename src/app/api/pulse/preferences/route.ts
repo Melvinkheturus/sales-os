@@ -9,7 +9,7 @@ export async function GET() {
 
   const user = await db.user.findUnique({
     where: { clerkId },
-    select: { id: true, brandId: true },
+    select: { id: true, activeBrandId: true },
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
@@ -34,7 +34,7 @@ export async function PUT(request: Request) {
 
   const user = await db.user.findUnique({
     where: { clerkId },
-    select: { id: true, brandId: true },
+    select: { id: true, activeBrandId: true },
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 

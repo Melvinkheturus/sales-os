@@ -226,7 +226,7 @@ function CXWorkload({ teammates }: { teammates: Teammate[] }) {
               </span>
             </div>
             <div className="h-1.5 w-full bg-muted/30 rounded-full overflow-hidden">
-              <div className="h-full w-0 bg-gradient-to-r from-[#C4B5FD] to-[#8B5CF6] rounded-full" />
+              <div className="h-full w-0 bg-linear-to-r from-[#C4B5FD] to-[#8B5CF6] rounded-full" />
             </div>
           </div>
         );

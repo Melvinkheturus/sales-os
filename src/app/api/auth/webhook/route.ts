@@ -112,7 +112,7 @@ export async function POST(req: Request) {
       }
 
       // Create user in DB with onboardingState
-      await db.user.create({
+      const newUser = await db.user.create({
         data: {
           clerkId: data.id,
           email: primaryEmail,
@@ -120,11 +120,17 @@ export async function POST(req: Request) {
           lastName: data.last_name,
           avatarUrl: data.image_url,
           roleId,
-          brandId,
           isActive: true,
           onboardingState,
         },
       });
+
+      // If invited to a specific brand, grant brand access via UserBrandAccess
+      if (brandId) {
+        await db.userBrandAccess.create({
+          data: { userId: newUser.id, brandId },
+        });
+      }
 
       // Set Clerk publicMetadata for zero-DB-hit middleware routing
       const client = await clerkClient();

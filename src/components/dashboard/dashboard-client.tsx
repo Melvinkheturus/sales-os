@@ -89,6 +89,7 @@ interface DashboardClientProps {
   } | null;
   teammates: Teammate[];
   brands: Brand[];
+  brandName: string;
 }
 
 // Pool of 8 customizable KPIs
@@ -123,7 +124,7 @@ const WIDGET_POOL = {
 
 type WidgetType = keyof typeof WIDGET_POOL;
 
-export function DashboardClient({ user, teammates, brands }: DashboardClientProps) {
+export function DashboardClient({ user, teammates, brands, brandName }: DashboardClientProps) {
   const [greeting, setGreeting] = useState("Welcome back");
 
   // Layout states for customized KPI slots (4 slots)
@@ -223,23 +224,6 @@ export function DashboardClient({ user, teammates, brands }: DashboardClientProp
     });
   };
 
-  const [activeBrandId, setActiveBrandId] = useState<string | null>(null);
-
-  useEffect(() => {
-    setActiveBrandId(localStorage.getItem("mergex_active_brand"));
-
-    const handleBrandChange = (e: Event) => {
-      const customEvent = e as CustomEvent;
-      setActiveBrandId(customEvent.detail.brandId);
-    };
-
-    window.addEventListener("mergex:brand-changed", handleBrandChange);
-    return () => {
-      window.removeEventListener("mergex:brand-changed", handleBrandChange);
-    };
-  }, []);
-
-  const activeBrandName = brands.find((b) => b.id === activeBrandId)?.name ?? "All Brands";
 
   return (
     <div className="space-y-8 max-w-[1600px] mx-auto pb-8">
@@ -251,7 +235,7 @@ export function DashboardClient({ user, teammates, brands }: DashboardClientProp
             {greeting}, {user?.firstName ?? "Teammate"}
           </h2>
           <p className="text-xs text-muted-foreground">
-            Here's your operational overview for <span className="font-semibold text-foreground/85">{activeBrandName}</span> today.
+            Here's your operational overview for <span className="font-semibold text-foreground/85">{brandName}</span> today.
           </p>
         </div>
 
@@ -460,7 +444,7 @@ export function DashboardClient({ user, teammates, brands }: DashboardClientProp
               Real-time events happening across divisions
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-6 pt-0 flex-grow flex items-center justify-center">
+          <CardContent className="p-6 pt-0 grow flex items-center justify-center">
             {/* Empty state for Activity Feed */}
             <div className="flex flex-col items-center justify-center py-6 text-center text-xs text-muted-foreground">
               <Activity className="h-8 w-8 text-muted-foreground/30 mb-2 animate-pulse" />
@@ -483,7 +467,7 @@ export function DashboardClient({ user, teammates, brands }: DashboardClientProp
               Immediate tasks requiring attention
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-6 pt-0 flex-grow flex items-center justify-center">
+          <CardContent className="p-6 pt-0 grow flex items-center justify-center">
             {actions.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-center text-xs text-muted-foreground">
                 <CheckCircle2 className="h-8 w-8 text-emerald-500/30 mb-2" />

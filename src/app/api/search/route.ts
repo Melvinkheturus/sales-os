@@ -18,17 +18,17 @@ export interface SearchGroup {
   results: SearchResult[];
 }
 
-// ── Static navigation items ──────────────────────────────────────────────────
-const NAV_ITEMS: SearchResult[] = [
+// ── Static navigation items template ──────────────────────────────────────────
+const NAV_ITEMS_TEMPLATE: SearchResult[] = [
   { id: "nav-dashboard", entityType: "nav", title: "Dashboard",       href: "/dashboard" },
   { id: "nav-team",      entityType: "nav", title: "Team & Access",   href: "/dashboard/team" },
   { id: "nav-pulse",     entityType: "nav", title: "Pulse Engine",    href: "/dashboard/pulse" },
   { id: "nav-settings",  entityType: "nav", title: "Settings",        href: "/dashboard/settings" },
 ];
 
-// ── Quick actions ────────────────────────────────────────────────────────────
-const ACTION_ITEMS: SearchResult[] = [
-  { id: "action-settings",     entityType: "action", title: "Notification Settings", subtitle: "Configure Pulse preferences", href: "/dashboard/settings" },
+// ── Quick actions template ───────────────────────────────────────────────────
+const ACTION_ITEMS_TEMPLATE: SearchResult[] = [
+  { id: "action-settings", entityType: "action", title: "Notification Settings", subtitle: "Configure Pulse preferences", href: "/dashboard/settings" },
 ];
 
 // ── GET /api/search?q=query&limit=5 ─────────────────────────────────────────
@@ -36,11 +36,41 @@ export async function GET(request: Request) {
   const { userId: clerkId } = await auth();
   if (!clerkId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // Resolve the user's active brand slug via activeBrandId — no fallback to first brand
   const user = await db.user.findUnique({
     where: { clerkId },
-    select: { id: true, brandId: true },
+    select: { id: true, activeBrandId: true },
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+  // Look up active brand slug — if none set, return empty results
+  let slug: string | null = null;
+  if (user.activeBrandId) {
+    const brand = await db.brand.findUnique({
+      where: { id: user.activeBrandId },
+      select: { slug: true, status: true },
+    });
+    if (brand && brand.status === "active") slug = brand.slug;
+  }
+
+  // No active brand → user needs to pick one first
+  if (!slug) {
+    return NextResponse.json({ query: "", groups: [] });
+  }
+
+  const getDynamicHref = (href?: string) => {
+    return href ? href.replace(/^\/dashboard/, `/workspaces/${slug}`) : undefined;
+  };
+
+  const NAV_ITEMS = NAV_ITEMS_TEMPLATE.map((item) => ({
+    ...item,
+    href: getDynamicHref(item.href),
+  }));
+
+  const ACTION_ITEMS = ACTION_ITEMS_TEMPLATE.map((item) => ({
+    ...item,
+    href: getDynamicHref(item.href),
+  }));
 
   const url = new URL(request.url);
   const q = (url.searchParams.get("q") ?? "").trim();
@@ -60,7 +90,7 @@ export async function GET(request: Request) {
   const contains = q;
   const mode = "insensitive" as const;
 
-  // ── Search foundational team members ──────────────────────────────────
+  // ── Search team members ──────────────────────────────────────────────────
   const users = await db.user.findMany({
     where: {
       isActive: true,
@@ -77,14 +107,10 @@ export async function GET(request: Request) {
   // ── Filter static items ──────────────────────────────────────────────────
   const lq = q.toLowerCase();
   const navResults = NAV_ITEMS.filter(
-    (n) =>
-      n.title.toLowerCase().includes(lq) ||
-      (n.subtitle?.toLowerCase().includes(lq) ?? false)
+    (n) => n.title.toLowerCase().includes(lq) || (n.subtitle?.toLowerCase().includes(lq) ?? false)
   );
   const actionResults = ACTION_ITEMS.filter(
-    (a) =>
-      a.title.toLowerCase().includes(lq) ||
-      (a.subtitle?.toLowerCase().includes(lq) ?? false)
+    (a) => a.title.toLowerCase().includes(lq) || (a.subtitle?.toLowerCase().includes(lq) ?? false)
   );
 
   // ── Map to SearchResult ──────────────────────────────────────────────────
@@ -99,7 +125,7 @@ export async function GET(request: Request) {
         entityType: "user",
         title:      `${u.firstName ?? ""} ${u.lastName ?? ""}`.trim() || u.email,
         subtitle:   u.role.label,
-        href:       `/dashboard/team`,
+        href:       `/workspaces/${slug}/team`,
       })),
     });
   }

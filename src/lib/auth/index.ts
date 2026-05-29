@@ -14,8 +14,7 @@ export type AuthUser = {
   lastName: string | null;
   avatarUrl: string | null;
   isActive: boolean;
-  brandId: string | null;
-  defaultBrandId: string | null;
+  activeBrandId: string | null;
   role: {
     id: string;
     name: string;
@@ -40,8 +39,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       lastName: true,
       avatarUrl: true,
       isActive: true,
-      brandId: true,
-      defaultBrandId: true,
+      activeBrandId: true,
       roleId: true,
       role: {
         select: {
@@ -110,7 +108,6 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
                 lastName: clerkUser.lastName,
                 avatarUrl: clerkUser.imageUrl,
                 roleId,
-                brandId,
                 isActive: true,
                 onboardingState,
               },
@@ -142,8 +139,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
                 lastName: true,
                 avatarUrl: true,
                 isActive: true,
-                brandId: true,
-                defaultBrandId: true,
+                activeBrandId: true,
                 roleId: true,
                 role: {
                   select: {
@@ -216,8 +212,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     lastName: user.lastName,
     avatarUrl: user.avatarUrl,
     isActive: user.isActive,
-    brandId: user.brandId,
-    defaultBrandId: user.defaultBrandId,
+    activeBrandId: user.activeBrandId,
     role: {
       id: activeRole.id,
       name: activeRole.name,
@@ -278,7 +273,6 @@ export async function syncClerkUser(
       firstName: clerkUser.firstName,
       lastName: clerkUser.lastName,
       avatarUrl: clerkUser.imageUrl,
-      brandId,
       roleId,
     },
     update: {

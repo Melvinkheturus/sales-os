@@ -15,7 +15,7 @@ interface ProfileData {
 
 interface PrefsData {
   theme: "light" | "dark" | "system";
-  defaultBrandId: string;
+  activeBrandId: string;
   notificationsEnabled: boolean;
 }
 
@@ -240,7 +240,7 @@ export default function ProfileOnboardingPage() {
   });
   const [prefs, setPrefs] = useState<PrefsData>({
     theme: "system",
-    defaultBrandId: "",
+    activeBrandId: "",
     notificationsEnabled: true,
   });
   const [loading, setLoading] = useState(false);

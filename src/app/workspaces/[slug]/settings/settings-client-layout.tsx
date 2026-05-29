@@ -22,7 +22,7 @@ export function SettingsClientLayout({ roleName, children }: SettingsClientLayou
       />
 
       {/* Settings Active Section Content Workspace (Glassmorphism Layout) */}
-      <div className="flex-grow flex flex-col p-3 lg:p-4 overflow-hidden h-full">
+      <div className="grow flex flex-col p-3 lg:p-4 overflow-hidden h-full">
         <div className="flex-1 glass-frost-card rounded-2xl shadow-lg flex flex-col overflow-hidden">
           <SettingsWorkspaceHeader />
           <div className="flex-1 overflow-y-auto p-4 lg:p-8">

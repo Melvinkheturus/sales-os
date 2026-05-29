@@ -11,11 +11,6 @@ import Image from "next/image";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-function setActiveBrandId(id: string) {
-  if (typeof window !== "undefined") {
-    localStorage.setItem("mergex_active_brand", id);
-  }
-}
 
 function generateSlug(name: string): string {
   return name
@@ -197,8 +192,13 @@ export function BrandNewClient() {
           return;
         }
 
-        setActiveBrandId(data.id);
-        router.push("/dashboard");
+        // Persist active brand to DB then navigate
+        await fetch("/api/profile", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ activeBrandId: data.id }),
+        });
+        router.push(`/workspaces/${data.slug}/dashboard`);
       } catch {
         setFormError("An unexpected error occurred. Please try again.");
         setIsSubmitting(false);

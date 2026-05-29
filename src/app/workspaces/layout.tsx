@@ -11,7 +11,7 @@ export default function WorkspacesLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen relative">
+    <div className="h-screen overflow-hidden">
       {children}
     </div>
   );

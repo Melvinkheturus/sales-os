@@ -11,7 +11,7 @@ interface ProfileInput {
 
 interface PrefsInput {
   theme: string;
-  defaultBrandId: string;
+  activeBrandId: string;
   notificationsEnabled: boolean;
 }
 
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
           username:        profile.username,
           designation:     profile.designation || null,
           theme:           prefs.theme,
-          defaultBrandId:  prefs.defaultBrandId || null,
+          activeBrandId:   prefs.activeBrandId || null,
           onboardingState: "COMPLETE",
         },
       });

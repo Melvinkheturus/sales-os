@@ -60,8 +60,6 @@ function StepBrands({ brands, onChange }: {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
 
-  const suggestions = ["MergeX", "OVRN Studios", "MergeX Academy"];
-
   const addBrand = (brandName: string = name) => {
     const s = slugify(brandName);
     if (!brandName.trim() || brands.find((b) => b.slug === s)) return;
@@ -81,22 +79,7 @@ function StepBrands({ brands, onChange }: {
         </p>
       </div>
 
-      {/* Suggestions */}
-      <div>
-        <p className="text-xs font-medium text-[#6B7280] uppercase tracking-wider mb-2">Quick add</p>
-        <div className="flex flex-wrap gap-2">
-          {suggestions.map((s) => (
-            <button
-              key={s}
-              onClick={() => addBrand(s)}
-              disabled={!!brands.find((b) => b.name === s)}
-              className="h-8 px-3 rounded-lg border border-[#E5E7EB] dark:border-[#26262C] text-xs text-foreground bg-white dark:bg-[#16161A] hover:border-[#8B5CF6]/50 hover:bg-[#8B5CF6]/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150"
-            >
-              + {s}
-            </button>
-          ))}
-        </div>
-      </div>
+
 
       {/* Manual add */}
       <div className="flex gap-2">

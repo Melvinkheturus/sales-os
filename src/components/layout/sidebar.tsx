@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 import { toast } from "sonner";
 import {
   Settings,
@@ -17,7 +17,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { navGroups } from "@/config/navigation";
-import { getActiveBrandId } from "@/components/layout/brand-switcher";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -51,32 +50,23 @@ const SUB_ITEMS: Record<string, { title: string; href: string }[]> = {
 
 export function Sidebar({ collapsed, onCollapse }: SidebarProps) {
   const pathname = usePathname();
+  const params = useParams();
+  const slug = params?.slug as string;
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({});
-  const [activeBrandName, setActiveBrandName] = useState<string | null>(null);
 
-  // Hydrate active brand name from localStorage and listen for changes
-  useEffect(() => {
-    const update = () => {
-      const id = getActiveBrandId();
-      if (!id) { setActiveBrandName(null); return; }
-      // Read brand name from sessionStorage cache set by TopNav or BrandSwitcher
-      const cached = sessionStorage.getItem(`mergex_brand_name_${id}`);
-      if (cached) setActiveBrandName(cached);
-    };
-    update();
-    const handler = () => update();
-    window.addEventListener("mergex:brand-changed", handler);
-    return () => window.removeEventListener("mergex:brand-changed", handler);
-  }, []);
+  const getDynamicHref = (href: string) => {
+    return href.replace(/^\/dashboard/, `/workspaces/${slug}`);
+  };
+
 
   useEffect(() => {
     const activeAccordions: Record<string, boolean> = {};
-    if (pathname.startsWith("/dashboard/crm")) activeAccordions["CRM"] = true;
-    if (pathname.startsWith("/dashboard/clients")) activeAccordions["Clients"] = true;
-    if (pathname.startsWith("/dashboard/documents")) activeAccordions["Documents"] = true;
-    if (pathname.startsWith("/dashboard/knowledge")) activeAccordions["Knowledge"] = true;
+    if (pathname.startsWith(`/workspaces/${slug}/crm`)) activeAccordions["CRM"] = true;
+    if (pathname.startsWith(`/workspaces/${slug}/clients`)) activeAccordions["Clients"] = true;
+    if (pathname.startsWith(`/workspaces/${slug}/documents`)) activeAccordions["Documents"] = true;
+    if (pathname.startsWith(`/workspaces/${slug}/knowledge`)) activeAccordions["Knowledge"] = true;
     setOpenAccordions((prev) => ({ ...prev, ...activeAccordions }));
-  }, [pathname]);
+  }, [pathname, slug]);
 
   const toggleAccordion = (title: string, e: React.MouseEvent) => {
     if (SUB_ITEMS[title]) {
@@ -157,10 +147,11 @@ export function Sidebar({ collapsed, onCollapse }: SidebarProps) {
           {navGroups.flatMap((group) =>
             group.items.map((item) => {
               const Icon = item.icon;
+              const dynamicHref = getDynamicHref(item.href);
               const isActive =
                 item.href === "/dashboard"
-                  ? pathname === "/dashboard"
-                  : pathname.startsWith(item.href);
+                  ? pathname === dynamicHref
+                  : pathname.startsWith(dynamicHref);
               const isFrozen = !!item.isComingSoon;
               const subItems = SUB_ITEMS[item.title];
               const isAccordionOpen = !!openAccordions[item.title];
@@ -168,7 +159,7 @@ export function Sidebar({ collapsed, onCollapse }: SidebarProps) {
               const linkEl = (
                 <Link
                   key={item.title}
-                  href={item.href}
+                  href={dynamicHref}
                   onClick={(e) =>
                     !collapsed && subItems && toggleAccordion(item.title, e)
                   }
@@ -242,11 +233,12 @@ export function Sidebar({ collapsed, onCollapse }: SidebarProps) {
                   {subItems && isAccordionOpen && (
                     <ul className="ml-[30px] mt-0.5 mb-1 space-y-0.5 border-l border-border/20 pl-3">
                       {subItems.map((sub) => {
-                        const isSubActive = pathname === sub.href;
+                        const subHref = getDynamicHref(sub.href);
+                        const isSubActive = pathname === subHref;
                         return (
                           <li key={sub.title}>
                             <Link
-                              href={sub.href}
+                              href={subHref}
                               onClick={(e) => {
                                 e.preventDefault();
                                 toast.info(`${sub.title} details are under Phase 1 construction.`);
@@ -284,17 +276,17 @@ export function Sidebar({ collapsed, onCollapse }: SidebarProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="/dashboard/settings"
+                  href={`/workspaces/${slug}/settings`}
                   className={cn(
                     "flex items-center justify-center h-9 w-9 mx-auto rounded-full transition-colors",
-                    pathname.startsWith("/dashboard/settings")
+                    pathname.startsWith(`/workspaces/${slug}/settings`)
                       ? "bg-[#4C1D95] hover:bg-[#3B0764] text-white shadow-xs"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
                   )}
                 >
                   <Settings
                     className="h-[16px] w-[16px] shrink-0"
-                    strokeWidth={pathname.startsWith("/dashboard/settings") ? 2 : 1.5}
+                    strokeWidth={pathname.startsWith(`/workspaces/${slug}/settings`) ? 2 : 1.5}
                   />
                 </Link>
               </TooltipTrigger>
@@ -304,11 +296,11 @@ export function Sidebar({ collapsed, onCollapse }: SidebarProps) {
             </Tooltip>
           ) : (
             <Link
-              href="/dashboard/settings"
+              href={`/workspaces/${slug}/settings`}
               className={cn(
                 "flex items-center gap-3 px-2 py-[7px] rounded-md text-[13px] transition-colors",
                 /* Settings active: font-medium / inactive: font-normal */
-                pathname.startsWith("/dashboard/settings")
+                pathname.startsWith(`/workspaces/${slug}/settings`)
                   ? "text-foreground font-medium"
                   : "text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 font-normal"
               )}
@@ -316,11 +308,11 @@ export function Sidebar({ collapsed, onCollapse }: SidebarProps) {
               <Settings
                 className={cn(
                   "h-[16px] w-[16px] shrink-0",
-                  pathname.startsWith("/dashboard/settings")
+                  pathname.startsWith(`/workspaces/${slug}/settings`)
                     ? "text-foreground"
                     : "text-muted-foreground"
                 )}
-                strokeWidth={pathname.startsWith("/dashboard/settings") ? 2 : 1.5}
+                strokeWidth={pathname.startsWith(`/workspaces/${slug}/settings`) ? 2 : 1.5}
               />
               <span>Settings</span>
             </Link>

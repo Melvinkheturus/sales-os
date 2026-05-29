@@ -1,4 +1,6 @@
 "use client";
+// Refreshed to sync IDE diagnostics with generated types
+
 
 import { cn } from "@/lib/utils";
 import { NotificationPriority, NotificationType } from "@prisma/client";
@@ -66,22 +68,13 @@ const PRIORITY_CONFIG: Record<
 function NotifIcon({ type, priority }: { type: NotificationType; priority: NotificationPriority }) {
   const cfg = PRIORITY_CONFIG[priority];
 
-  const iconMap: Partial<Record<NotificationType, React.ElementType>> = {
-    MOM_OVERDUE: AlertTriangle,
-    MOM_ESCALATION: ShieldAlert,
-    FOLLOW_UP_DUE: Clock,
+  const iconMap: Record<NotificationType, React.ElementType> = {
     LEAD_ASSIGNED: UserPlus,
-    MEETING_REMINDER: Bell,
-    PROPOSAL_STATUS: FileText,
-    QUALIFICATION_BLOCKED: ShieldAlert,
-    LEAD_INACTIVITY: TrendingUp,
     TASK_DUE: CheckSquare,
-    ESCALATION: AlertTriangle,
-    ACTIVITY: Activity,
-    STAGE_CHANGED: Zap,
+    OVERDUE_ALERT: AlertTriangle,
+    MENTION: UserPlus,
     SYSTEM: Bell,
-    REMINDER: Clock,
-    APPROVAL: CheckSquare,
+    INVITE: UserPlus,
   };
 
   const Icon = iconMap[type] ?? Bell;
@@ -114,7 +107,7 @@ export function NotificationItem({
         "group flex gap-3 px-3 py-3 border-l-2 transition-all duration-200 cursor-pointer",
         "hover:bg-muted/40 rounded-r-md",
         cfg.border,
-        !notification.isRead && "bg-primary/[0.03]"
+        !notification.isRead && "bg-primary/3"
       )}
       onClick={() => !notification.isRead && onMarkRead?.(notification.id)}
     >

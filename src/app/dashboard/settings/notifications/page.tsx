@@ -143,33 +143,9 @@ export default function NotificationSettingsPage() {
   }
 
   return (
-    <div className="max-w-xl">
-      {/* Page header */}
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 border border-primary/20">
-            <Zap className="h-4 w-4 text-primary" />
-          </div>
-          <div>
-            <h2 className="text-base font-semibold">Pulse Engine</h2>
-            <p className="text-xs text-muted-foreground">
-              Notification preferences
-            </p>
-          </div>
-        </div>
-        <Button
-          size="sm"
-          onClick={handleSave}
-          disabled={saving}
-          className="gap-2"
-        >
-          <Save className="h-3.5 w-3.5" />
-          {saving ? "Saving…" : "Save"}
-        </Button>
-      </div>
-
+    <div className="max-w-2xl">
       {/* ── In-App Notifications ─────────────────────────────────── */}
-      <div className="rounded-xl border border-border bg-card p-5 mb-4">
+      <div className="rounded-xl border border-border/30 bg-card shadow-xs p-5 mb-4">
         <SectionHeader
           icon={Bell}
           title="In-App Notifications"
@@ -214,7 +190,7 @@ export default function NotificationSettingsPage() {
       </div>
 
       {/* ── Email Notifications ───────────────────────────────────── */}
-      <div className="rounded-xl border border-border bg-card p-5 mb-4">
+      <div className="rounded-xl border border-border/30 bg-card shadow-xs p-5 mb-4">
         <SectionHeader
           icon={Mail}
           title="Email Notifications"
@@ -255,7 +231,7 @@ export default function NotificationSettingsPage() {
                 className={cn(
                   "flex-1 py-2 px-3 rounded-lg text-xs font-medium border transition-all",
                   prefs.emailDigestMode === mode
-                    ? "bg-primary/10 border-primary/30 text-primary"
+                    ? "bg-[#8B5CF6]/10 border-[#8B5CF6]/30 text-[#8B5CF6]"
                     : "border-border text-muted-foreground hover:border-border/80",
                   !prefs.emailEnabled && "opacity-40 pointer-events-none"
                 )}
@@ -273,7 +249,7 @@ export default function NotificationSettingsPage() {
       </div>
 
       {/* ── Quiet Hours ───────────────────────────────────────────── */}
-      <div className="rounded-xl border border-border bg-card p-5">
+      <div className="rounded-xl border border-border/30 bg-card shadow-xs p-5">
         <SectionHeader
           icon={Clock}
           title="Quiet Hours"
@@ -316,17 +292,25 @@ export default function NotificationSettingsPage() {
         )}
       </div>
 
-      {/* Info note */}
-      <div className="mt-6 p-4 rounded-xl border border-primary/20 bg-primary/[0.04]">
-        <div className="flex items-start gap-2">
+      {/* Save button and Info note */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-6 p-4 rounded-xl border border-primary/20 bg-primary/[0.04]">
+        <div className="flex items-start gap-2 max-w-md">
           <Zap className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            <span className="font-medium text-foreground">Pulse Engine</span> automatically
+          <p className="text-xs text-muted-foreground leading-relaxed text-left">
+            <span className="font-semibold text-foreground">Pulse Engine</span> automatically
             processes overdue follow-ups, MOM deadlines, and stale leads. These operational
-            rules run independently of your preferences and ensure accountability across
-            your team.
+            rules run independently of your preferences.
           </p>
         </div>
+        <Button
+          size="sm"
+          onClick={handleSave}
+          disabled={saving}
+          className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
+        >
+          <Save className="h-3.5 w-3.5" />
+          {saving ? "Saving…" : "Save Preferences"}
+        </Button>
       </div>
     </div>
   );

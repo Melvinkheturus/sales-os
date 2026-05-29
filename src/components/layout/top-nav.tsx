@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
-import { Search, Menu, Zap } from "lucide-react";
+import { useUser, useClerk } from "@clerk/nextjs";
+import Link from "next/link";
+import { Search, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -11,15 +12,16 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { MobileSidebar } from "@/components/layout/mobile-sidebar";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { NotificationDropdown } from "@/components/notifications/notification-dropdown";
 import { useCommandCenter } from "@/components/command/command-provider";
+import { BrandSwitcher, type BrandOption } from "@/components/layout/brand-switcher";
 import { cn } from "@/lib/utils";
 
 function formatBreadcrumb(pathname: string): string {
   const segments = pathname.split("/").filter(Boolean);
   const last = segments[segments.length - 1];
-  if (!last) return "Dashboard";
+  if (!last || last === "dashboard") return "Dashboard";
   return last
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -30,80 +32,190 @@ export function TopNav() {
   const pathname = usePathname();
   const pageTitle = formatBreadcrumb(pathname);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [brands, setBrands] = useState<BrandOption[]>([]);
   const { toggle } = useCommandCenter();
 
-  // Detect mac for correct shortcut hint
   const isMac = typeof navigator !== "undefined" && /Mac/i.test(navigator.platform);
 
+  // Load brands for switcher
+  useEffect(() => {
+    fetch("/api/brands")
+      .then((r) => r.ok ? r.json() : [])
+      .then((data: unknown) => {
+        if (Array.isArray(data)) setBrands(data as BrandOption[]);
+      })
+      .catch(() => {/* Brands not critical for topnav to fail */});
+  }, []);
+
   return (
-    <header className="h-14 flex items-center gap-4 border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-30 px-4 lg:px-6">
-      {/* Mobile menu trigger */}
-      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 lg:hidden text-muted-foreground"
-          >
-            <Menu className="h-4 w-4" />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="p-0 w-60">
-          <MobileSidebar onClose={() => setMobileOpen(false)} />
-        </SheetContent>
-      </Sheet>
+    <div className="pt-3.5 px-6 lg:px-8 sticky top-0 z-30 bg-transparent shrink-0">
+      <header className="h-12 flex items-center justify-between bg-transparent px-1">
+      
+      {/* ── Left Group: Mobile menu + Page title + Brand Switcher ── */}
+      <div className="flex items-center gap-3">
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 lg:hidden text-muted-foreground hover:bg-muted/50"
+            >
+              <Menu className="h-4 w-4" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-60">
+            <MobileSidebar onClose={() => setMobileOpen(false)} />
+          </SheetContent>
+        </Sheet>
 
-      {/* Page title */}
-      <h1 className="text-sm font-semibold truncate hidden sm:block">
-        {pageTitle}
-      </h1>
+        <h1 className="text-xs font-semibold uppercase tracking-wider text-foreground hidden sm:block">
+          {pageTitle}
+        </h1>
 
-      {/* Spacer */}
-      <div className="flex-1" />
+        {/* Separator */}
+        {brands.length > 0 && <div className="h-4 w-px bg-border/40 hidden sm:block" />}
 
-      {/* ── Command Center Trigger ─────────────────────────────────────── */}
-      <button
-        onClick={toggle}
-        className={cn(
-          "hidden md:flex items-center gap-2.5 h-8 px-3 rounded-lg",
-          "bg-muted/60 hover:bg-muted border border-border/60 hover:border-border",
-          "text-muted-foreground hover:text-foreground",
-          "text-xs transition-all duration-150 group",
-          "min-w-[200px] max-w-xs w-full"
-        )}
-        aria-label="Open Command Center"
-      >
-        <Zap className="h-3 w-3 text-primary/70 group-hover:text-primary transition-colors shrink-0" />
-        <span className="flex-1 text-left text-[11px]">Search or jump to…</span>
-        <kbd className="flex items-center gap-0.5 text-[10px] font-mono opacity-60 bg-background border border-border rounded px-1 py-0.5 shrink-0">
-          {isMac ? "⌘" : "Ctrl"}K
-        </kbd>
-      </button>
+        {/* Brand Switcher */}
+        <BrandSwitcher brands={brands} />
+      </div>
 
-      {/* Mobile Command Center trigger (icon only) */}
-      <button
-        onClick={toggle}
-        className="flex md:hidden items-center justify-center h-8 w-8 rounded-lg bg-muted/60 border border-border/60 text-muted-foreground hover:text-foreground transition-colors"
-        aria-label="Open Command Center"
-      >
-        <Search className="h-4 w-4" />
-      </button>
+      {/* ── Right Group: Search + Notifications + Theme + Profile ── */}
+      <div className="flex items-center gap-2 shrink-0">
 
-      {/* Theme Toggle */}
-      <ThemeToggle />
+        {/* Global Search Bar */}
+        <button
+          onClick={toggle}
+          className={cn(
+            "hidden sm:flex items-center gap-2.5 h-8 px-3 rounded-md cursor-pointer",
+            "bg-muted/40 hover:bg-muted/70 border border-border/20 hover:border-border/40",
+            "text-muted-foreground hover:text-foreground",
+            "text-xs transition-all duration-150 group",
+            "w-[200px]"
+          )}
+          aria-label="Open Command Center"
+        >
+          <Search className="h-3 w-3 text-[#8B5CF6]/75 group-hover:text-[#8B5CF6] transition-colors shrink-0" />
+          <span className="flex-1 text-left text-[11px]">Search…</span>
+          <kbd className="flex items-center gap-0.5 text-[9px] font-mono opacity-60 bg-background/50 border border-border/30 rounded px-1 shrink-0">
+            {isMac ? "⌘" : "Ctrl"}K
+          </kbd>
+        </button>
 
-      {/* Live Notification Dropdown */}
-      <NotificationDropdown />
+        {/* Notifications */}
+        <NotificationDropdown />
 
-      {/* User button */}
-      <UserButton
-        appearance={{
-          elements: {
-            avatarBox: "h-7 w-7",
-          },
-        }}
-      />
+        {/* Theme Changer */}
+        <AnimatedThemeToggler />
+
+        {/* Profile */}
+        <ProfileMenu />
+
+      </div>
     </header>
+  </div>
+  );
+}
+
+// ── Native Profile Dropdown Menu ──
+function ProfileMenu() {
+  const { user } = useUser();
+  const { signOut } = useClerk();
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  if (!user) return null;
+
+  return (
+    <div ref={dropdownRef} className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="h-7 w-7 rounded-md overflow-hidden border border-border/20 hover:border-border/60 transition-all flex items-center justify-center cursor-pointer focus:outline-none"
+        aria-label="User profile options"
+      >
+        {user.imageUrl ? (
+          <img src={user.imageUrl} className="h-full w-full object-cover" alt="User Avatar" />
+        ) : (
+          <div className="h-full w-full bg-[#8B5CF6]/10 flex items-center justify-center text-xs font-bold text-[#8B5CF6] uppercase">
+            {user.firstName?.[0] ?? "U"}
+          </div>
+        )}
+      </button>
+
+      {open && (
+        <div className="absolute top-9 right-0 z-50 min-w-[200px] bg-card/90 backdrop-blur-md border border-white/60 dark:border-white/5 rounded-xl shadow-lg overflow-hidden py-1.5">
+          
+          {/* Account profile overview card inside dropdown */}
+          <div className="px-3.5 py-2.5 border-b border-[#E5E7EB] dark:border-[#26262C]/60 flex items-center gap-2.5">
+            {user.imageUrl ? (
+              <img src={user.imageUrl} className="h-7 w-7 rounded-md border border-border/20 object-cover" alt="User Avatar" />
+            ) : (
+              <div className="h-7 w-7 rounded-md bg-[#8B5CF6]/10 flex items-center justify-center text-xs font-bold text-[#8B5CF6] uppercase">
+                {user.firstName?.[0] ?? "U"}
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold text-foreground truncate leading-none">
+                {user.firstName ? `${user.firstName} ${user.lastName ?? ""}` : "Teammate"}
+              </p>
+              <p className="text-[10px] text-muted-foreground truncate mt-1 leading-none">
+                {(user.publicMetadata?.designation as string) ?? "Member"}
+              </p>
+            </div>
+          </div>
+
+          {/* Popover Action Links */}
+          <div className="py-1">
+            <Link
+              href="/onboarding/profile"
+              className="w-full flex items-center px-3.5 py-2 text-xs font-semibold text-foreground hover:bg-muted/50 transition-colors"
+              onClick={() => setOpen(false)}
+            >
+              My Profile
+            </Link>
+            
+            <Link
+              href="/dashboard/settings"
+              className="w-full flex items-center px-3.5 py-2 text-xs font-semibold text-foreground hover:bg-muted/50 transition-colors"
+              onClick={() => setOpen(false)}
+            >
+              Preferences
+            </Link>
+
+            <Link
+              href="/dashboard/settings"
+              className="w-full flex items-center px-3.5 py-2 text-xs font-semibold text-foreground hover:bg-muted/50 transition-colors"
+              onClick={() => setOpen(false)}
+            >
+              Settings
+            </Link>
+          </div>
+
+          <div className="border-t border-[#E5E7EB] dark:border-[#26262C]/60 my-1 mx-2" />
+
+          {/* Sign-out button */}
+          <button
+            onClick={() => {
+              setOpen(false);
+              signOut();
+            }}
+            className="w-full flex items-center px-3.5 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-muted/50 transition-colors text-left cursor-pointer"
+          >
+            Logout
+          </button>
+
+        </div>
+      )}
+    </div>
   );
 }

@@ -3,147 +3,31 @@
 // MergeX Sales OS
 // ─────────────────────────────────────────────
 
-import type {
-  User,
-  Organization,
-  Lead,
-  Contact,
-  Company,
-  Deal,
-  Activity,
-  Document,
-  Task,
-  Workflow,
-  LeadStatus,
-  DealStage,
-  Priority,
-  ActivityType,
-  DocumentType,
-  DocumentStatus,
-  TaskStatus,
-  PlanType,
-} from "@prisma/client";
+export * from "./auth";
+export * from "./permissions";
+export * from "./api";
+export * from "./common";
 
-// Re-export Prisma enums for use across the app
-export type {
-  User,
-  Organization,
-  Lead,
-  Contact,
-  Company,
-  Deal,
-  Activity,
-  Document,
-  Task,
-  Workflow,
-  LeadStatus,
-  DealStage,
-  Priority,
-  ActivityType,
-  DocumentType,
-  DocumentStatus,
-  TaskStatus,
-  PlanType,
-};
+// ── Legacy Placeholders for decoupled CRM modules ──
+// These will be migrated to modules/crm/types in Phase 6
+export type Organization = any;
+export type Lead = any;
+export type Contact = any;
+export type Company = any;
+export type Deal = any;
+export type Activity = any;
+export type Document = any;
+export type Task = any;
+export type Workflow = any;
+export type LeadStatus = any;
+export type DealStage = any;
+export type Priority = any;
+export type ActivityType = any;
+export type DocumentType = any;
+export type DocumentStatus = any;
+export type TaskStatus = any;
 
-// ─────────────────────────────────────────────
-// EXTENDED / ENRICHED TYPES
-// ─────────────────────────────────────────────
-
-export type UserWithOrg = User & {
-  organization: Organization;
-};
-
-export type LeadWithOwner = Lead & {
-  owner: Pick<User, "id" | "firstName" | "lastName" | "avatarUrl">;
-};
-
-export type DealWithRelations = Deal & {
-  owner: Pick<User, "id" | "firstName" | "lastName" | "avatarUrl">;
-  lead?: Pick<Lead, "id" | "firstName" | "lastName"> | null;
-  contact?: Pick<Contact, "id" | "firstName" | "lastName"> | null;
-  company?: Pick<Company, "id" | "name"> | null;
-};
-
-export type ActivityWithUser = Activity & {
-  user: Pick<User, "id" | "firstName" | "lastName" | "avatarUrl">;
-};
-
-export type DocumentWithAuthor = Document & {
-  author: Pick<User, "id" | "firstName" | "lastName" | "avatarUrl">;
-};
-
-// ─────────────────────────────────────────────
-// NAVIGATION TYPES
-// ─────────────────────────────────────────────
-
-export interface NavItem {
-  title: string;
-  href: string;
-  icon: string;
-  badge?: string | number;
-  roles?: string[]; // Role names e.g. ['admin', 'manager']
-  children?: NavItem[];
-}
-
-export interface BreadcrumbItem {
-  label: string;
-  href?: string;
-}
-
-// ─────────────────────────────────────────────
-// DASHBOARD / ANALYTICS TYPES
-// ─────────────────────────────────────────────
-
-export interface KPICardData {
-  title: string;
-  value: string | number;
-  change: number; // percentage change
-  trend: "up" | "down" | "neutral";
-  icon: string;
-  description?: string;
-}
-
-export interface ChartDataPoint {
-  label: string;
-  value: number;
-  [key: string]: string | number;
-}
-
-// ─────────────────────────────────────────────
-// SERVER ACTION RESPONSE TYPES
-// ─────────────────────────────────────────────
-
-export interface ActionResponse<T = unknown> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  fieldErrors?: Record<string, string[]>;
-}
-
-// ─────────────────────────────────────────────
-// PAGINATION / FILTER TYPES
-// ─────────────────────────────────────────────
-
-export interface PaginationParams {
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-}
-
-export interface FilterParams {
-  search?: string;
-  status?: string;
-  ownerId?: string;
-  dateFrom?: string;
-  dateTo?: string;
-}
-
-export interface PaginatedResult<T> {
-  items: T[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
+export type LeadWithOwner = any;
+export type DealWithRelations = any;
+export type ActivityWithUser = any;
+export type DocumentWithAuthor = any;

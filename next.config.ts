@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   // ── Image Optimization ───────────────────────────────────
   images: {
     formats: ["image/avif", "image/webp"],
+    qualities: [75, 95],
     remotePatterns: [
       // Clerk user profile pictures
       {
@@ -14,10 +15,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.clerk.dev",
       },
-      // Uploadthing / S3 if added later
+      // Cloudinary brand logos and assets
       {
         protocol: "https",
-        hostname: "utfs.io",
+        hostname: "res.cloudinary.com",
+        pathname: "/dlrexzxmx/**",
       },
     ],
   },
@@ -84,14 +86,7 @@ const nextConfig: NextConfig = {
 
   // ── Redirects ────────────────────────────────────────────
   async redirects() {
-    return [
-      // Redirect root to dashboard (handled by middleware too)
-      {
-        source: "/",
-        destination: "/dashboard",
-        permanent: false,
-      },
-    ];
+    return [];
   },
 
   // ── Experimental ─────────────────────────────────────────

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
-import { emit } from "@/lib/pulse";
+import { emit } from "@/lib/notifications";
 import { NotificationPriority, NotificationType } from "@prisma/client";
 
 // POST /api/pulse/emit
@@ -13,11 +13,11 @@ export async function POST(request: Request) {
 
   const user = await db.user.findUnique({
     where: { clerkId },
-    select: { id: true, email: true, organizationId: true },
+    select: { id: true, email: true },
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-  const body = await request.json() as {
+  interface EmitRequestBody {
     targetUserId?: string;
     type: NotificationType;
     priority?: NotificationPriority;
@@ -28,7 +28,11 @@ export async function POST(request: Request) {
     entityId?: string;
     metadata?: Record<string, unknown>;
     sendEmail?: boolean;
-  };
+  }
+
+  const body = (await request.url.includes("json") 
+    ? {} 
+    : await request.json()) as EmitRequestBody;
 
   // Resolve the target user (defaults to current user if not specified)
   let targetUserId = user.id;
@@ -37,9 +41,9 @@ export async function POST(request: Request) {
   if (body.targetUserId && body.targetUserId !== user.id) {
     const target = await db.user.findUnique({
       where: { id: body.targetUserId },
-      select: { id: true, email: true, organizationId: true },
+      select: { id: true, email: true },
     });
-    if (!target || target.organizationId !== user.organizationId) {
+    if (!target) {
       return NextResponse.json({ error: "Target user not found" }, { status: 404 });
     }
     targetUserId = target.id;
@@ -48,7 +52,6 @@ export async function POST(request: Request) {
 
   const notification = await emit({
     userId: targetUserId,
-    organizationId: user.organizationId,
     type: body.type,
     priority: body.priority ?? NotificationPriority.MEDIUM,
     title: body.title,

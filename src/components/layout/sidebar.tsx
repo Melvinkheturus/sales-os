@@ -1,263 +1,334 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { toast } from "sonner";
 import {
-  BarChart3,
-  Users,
-  Building2,
-  Handshake,
-  UserCircle,
-  BookOpen,
-  CheckSquare,
   Settings,
-  ChevronLeft,
-  TrendingUp,
-  LayoutDashboard,
-  Kanban,
-  Video,
-  FileText,
-  Rocket,
-  Brain,
-  Zap,
+  PanelLeftClose,
+  PanelLeftOpen,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { navGroups } from "@/config/navigation";
+import { getActiveBrandId } from "@/components/layout/brand-switcher";
 
 interface SidebarProps {
   collapsed: boolean;
   onCollapse: (val: boolean) => void;
 }
 
-interface NavGroup {
-  label: string;
-  items: NavItem[];
-}
-
-interface NavItem {
-  title: string;
-  href: string;
-  icon: React.ElementType;
-  badge?: string;
-}
-
-const navGroups: NavGroup[] = [
-  {
-    label: "Core",
-    items: [
-      { title: "Dashboard",  href: "/dashboard",          icon: LayoutDashboard },
-      { title: "Analytics",  href: "/dashboard/analytics", icon: BarChart3 },
-    ],
-  },
-  {
-    label: "Sales Engine",
-    items: [
-      { title: "Pipeline",      href: "/dashboard/pipeline",      icon: Kanban   },
-      { title: "Meetings",      href: "/dashboard/meetings",      icon: Video    },
-      { title: "Proposals",     href: "/dashboard/proposals",     icon: FileText },
-      { title: "Client Launch", href: "/dashboard/client-launch", icon: Rocket   },
-    ],
-  },
-  {
-    label: "CRM",
-    items: [
-      { title: "Leads",     href: "/dashboard/crm/leads",     icon: TrendingUp },
-      { title: "Contacts",  href: "/dashboard/crm/contacts",  icon: UserCircle },
-      { title: "Companies", href: "/dashboard/crm/companies", icon: Building2  },
-      { title: "Deals",     href: "/dashboard/crm/deals",     icon: Handshake  },
-    ],
-  },
-  {
-    label: "Enablement",
-    items: [
-      { title: "Knowledge Base", href: "/dashboard/knowledge", icon: BookOpen },
-      { title: "Team",           href: "/dashboard/team",       icon: Users },
-    ],
-  },
-  {
-    label: "Insights",
-    items: [
-      { title: "Pipeline Intelligence", href: "/dashboard/insights/pipeline-intelligence", icon: Brain },
-    ],
-  },
-  {
-    label: "Operations",
-    items: [
-      { title: "Tasks",         href: "/dashboard/operations/tasks", icon: CheckSquare },
-      { title: "Pulse Engine",  href: "/dashboard/pulse",            icon: Zap,          badge: "New" },
-    ],
-  },
-];
+const SUB_ITEMS: Record<string, { title: string; href: string }[]> = {
+  CRM: [
+    { title: "Leads", href: "/dashboard/crm/leads" },
+    { title: "Meetings", href: "/dashboard/crm/meetings" },
+    { title: "Proposals", href: "/dashboard/crm/proposals" },
+    { title: "Pipeline", href: "/dashboard/crm/pipeline" },
+  ],
+  Clients: [
+    { title: "Projects", href: "/dashboard/clients/projects" },
+    { title: "Reports", href: "/dashboard/clients/reports" },
+    { title: "Financials", href: "/dashboard/clients/financials" },
+    { title: "Timeline", href: "/dashboard/clients/timeline" },
+  ],
+  Documents: [
+    { title: "Templates", href: "/dashboard/documents/templates" },
+    { title: "Active Proposals", href: "/dashboard/documents/proposals" },
+    { title: "Signed Contracts", href: "/dashboard/documents/contracts" },
+  ],
+  Knowledge: [
+    { title: "Sales Manual", href: "/dashboard/knowledge/manual" },
+    { title: "Product Docs", href: "/dashboard/knowledge/docs" },
+    { title: "Process Wiki", href: "/dashboard/knowledge/wiki" },
+  ],
+};
 
 export function Sidebar({ collapsed, onCollapse }: SidebarProps) {
   const pathname = usePathname();
+  const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({});
+  const [activeBrandName, setActiveBrandName] = useState<string | null>(null);
+
+  // Hydrate active brand name from localStorage and listen for changes
+  useEffect(() => {
+    const update = () => {
+      const id = getActiveBrandId();
+      if (!id) { setActiveBrandName(null); return; }
+      // Read brand name from sessionStorage cache set by TopNav or BrandSwitcher
+      const cached = sessionStorage.getItem(`mergex_brand_name_${id}`);
+      if (cached) setActiveBrandName(cached);
+    };
+    update();
+    const handler = () => update();
+    window.addEventListener("mergex:brand-changed", handler);
+    return () => window.removeEventListener("mergex:brand-changed", handler);
+  }, []);
+
+  useEffect(() => {
+    const activeAccordions: Record<string, boolean> = {};
+    if (pathname.startsWith("/dashboard/crm")) activeAccordions["CRM"] = true;
+    if (pathname.startsWith("/dashboard/clients")) activeAccordions["Clients"] = true;
+    if (pathname.startsWith("/dashboard/documents")) activeAccordions["Documents"] = true;
+    if (pathname.startsWith("/dashboard/knowledge")) activeAccordions["Knowledge"] = true;
+    setOpenAccordions((prev) => ({ ...prev, ...activeAccordions }));
+  }, [pathname]);
+
+  const toggleAccordion = (title: string, e: React.MouseEvent) => {
+    if (SUB_ITEMS[title]) {
+      e.preventDefault();
+      setOpenAccordions((prev) => ({ ...prev, [title]: !prev[title] }));
+    }
+  };
 
   return (
-    <aside
+    <div
       className={cn(
-        "relative flex flex-col bg-card border-r border-border transition-all duration-300 ease-in-out shrink-0",
-        collapsed ? "w-16" : "w-60"
+        "relative h-screen transition-all duration-200 ease-in-out shrink-0 hidden lg:block",
+        collapsed ? "w-[60px]" : "w-[210px]"
       )}
     >
-      {/* Logo */}
-      <div
+      <aside
         className={cn(
-          "flex items-center h-14 px-4 border-b border-border",
-          collapsed ? "justify-center" : "justify-between"
+          "fixed top-0 bottom-0 left-0 z-40 flex flex-col bg-transparent border-r border-transparent transition-all duration-200 ease-in-out",
+          collapsed ? "w-[60px]" : "w-[210px]"
         )}
       >
-        {!collapsed && (
-          <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-7 h-7 relative rounded-md overflow-hidden shrink-0">
-              <Image src="/logo/mergex-logo.png" alt="MergeX Logo" fill className="object-cover" />
-            </div>
-            <span className="font-semibold text-sm tracking-tight truncate">
-              MergeX Sales OS
-            </span>
-          </Link>
-        )}
-        {collapsed && (
-          <div className="w-7 h-7 relative rounded-md overflow-hidden flex items-center justify-center">
-            <Image src="/logo/mergex-logo.png" alt="MergeX Logo" fill className="object-cover" />
-          </div>
-        )}
-
-        {/* Collapse toggle */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            "h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground",
-            collapsed && "hidden"
-          )}
-          onClick={() => onCollapse(true)}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-4">
-        {navGroups.map((group) => (
-          <div key={group.label}>
-            {!collapsed && (
-              <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                {group.label}
-              </p>
-            )}
-            <ul className="space-y-0.5">
-              {group.items.map((item) => {
-                const Icon = item.icon;
-                const isActive =
-                  item.href === "/dashboard"
-                    ? pathname === "/dashboard"
-                    : pathname.startsWith(item.href);
-
-                const link = (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted",
-                      collapsed && "justify-center px-2"
-                    )}
-                  >
-                    <Icon
-                      className={cn(
-                        "h-4 w-4 shrink-0",
-                        isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                      )}
-                    />
-                    {!collapsed && (
-                      <>
-                        <span className="flex-1 truncate">{item.title}</span>
-                        {item.badge && (
-                          <Badge
-                            variant="secondary"
-                            className="h-4 text-[10px] px-1.5 ml-auto"
-                          >
-                            {item.badge}
-                          </Badge>
-                        )}
-                      </>
-                    )}
-                  </Link>
-                );
-
-                if (collapsed) {
-                  return (
-                    <Tooltip key={item.href}>
-                      <TooltipTrigger asChild>{link}</TooltipTrigger>
-                      <TooltipContent side="right" sideOffset={12}>
-                        {item.title}
-                      </TooltipContent>
-                    </Tooltip>
-                  );
-                }
-
-                return link;
-              })}
-            </ul>
-            <Separator className="mt-3 opacity-50" />
-          </div>
-        ))}
-      </nav>
-
-      {/* Footer */}
-      <div className="border-t border-border px-2 py-3">
-        {collapsed ? (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/dashboard/settings"
-                className={cn(
-                  "flex items-center justify-center gap-3 rounded-md px-2 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors",
-                  pathname.startsWith("/dashboard/settings") && "bg-primary/10 text-primary"
-                )}
-              >
-                <Settings className="h-4 w-4 shrink-0" />
+        {/* ── Logo ── */}
+        <div className="flex items-center px-3.5 border-b border-transparent pt-[16px] h-[64px]">
+          {collapsed ? (
+            /* Collapsed: logo visible by default; hover reveals expand icon */
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => onCollapse(false)}
+                  aria-label="Expand sidebar"
+                  className="group/logo relative flex items-center justify-center w-8 h-8 rounded-md hover:bg-black/5 dark:hover:bg-white/5 transition-colors mx-auto"
+                >
+                  {/* Logo — fades out on hover */}
+                  <img
+                    src="/logo/mergex-logo.png"
+                    alt="MergeX Logo"
+                    className="w-6 h-6 object-contain absolute transition-opacity duration-150 group-hover/logo:opacity-0"
+                  />
+                  {/* Expand icon — fades in on hover */}
+                  <PanelLeftOpen
+                    className="h-4 w-4 text-muted-foreground absolute opacity-0 transition-opacity duration-150 group-hover/logo:opacity-100"
+                    strokeWidth={1.6}
+                  />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={12} className="text-[10px] font-medium">
+                Expand sidebar
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            /* Open: logo + name link, collapse button at right */
+            <div className="flex items-center justify-between w-full">
+              <Link href="/workspaces" className="flex items-center gap-2.5 min-w-0 group/logolink">
+                <img
+                  src="/logo/mergex-logo.png"
+                  alt="MergeX Logo"
+                  className="w-6 h-6 object-contain shrink-0"
+                />
+                <div className="min-w-0">
+                  <span className="font-semibold text-[11px] uppercase tracking-wider text-foreground truncate block">
+                    MERGEX SALES OS
+                  </span>
+                </div>
               </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right" sideOffset={12}>
-              Settings
-            </TooltipContent>
-          </Tooltip>
-        ) : (
-          <Link
-            href="/dashboard/settings"
-            className={cn(
-              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors",
-              pathname.startsWith("/dashboard/settings") && "bg-primary/10 text-primary"
-            )}
-          >
-            <Settings className="h-4 w-4 shrink-0" />
-            <span>Settings</span>
-          </Link>
-        )}
+              <button
+                onClick={() => onCollapse(true)}
+                aria-label="Collapse sidebar"
+                className="h-6 w-6 ml-2 shrink-0 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+              >
+                <PanelLeftClose className="h-3.5 w-3.5" strokeWidth={1.6} />
+              </button>
+            </div>
+          )}
+        </div>
 
-        {/* Expand button when collapsed */}
-        {collapsed && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="mt-2 h-8 w-8 mx-auto flex text-muted-foreground hover:text-foreground"
-            onClick={() => onCollapse(false)}
-          >
-            <ChevronLeft className="h-4 w-4 rotate-180" />
-          </Button>
-        )}
-      </div>
-    </aside>
+        {/* ── Primary Navigation ── */}
+        <nav className="flex-1 overflow-y-auto pt-6 pb-3 px-3 space-y-0.5">
+          {navGroups.flatMap((group) =>
+            group.items.map((item) => {
+              const Icon = item.icon;
+              const isActive =
+                item.href === "/dashboard"
+                  ? pathname === "/dashboard"
+                  : pathname.startsWith(item.href);
+              const isFrozen = !!item.isComingSoon;
+              const subItems = SUB_ITEMS[item.title];
+              const isAccordionOpen = !!openAccordions[item.title];
+
+              const linkEl = (
+                <Link
+                  key={item.title}
+                  href={item.href}
+                  onClick={(e) =>
+                    !collapsed && subItems && toggleAccordion(item.title, e)
+                  }
+                  className={cn(
+                    "flex items-center gap-3 px-2 py-[7px] rounded-md transition-colors duration-100",
+                    collapsed ? "justify-center" : "",
+                    isActive
+                      ? "text-foreground"
+                      : isFrozen
+                      ? "text-muted-foreground/40 pointer-events-none"
+                      : "text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5"
+                  )}
+                >
+                  <Icon
+                    className={cn(
+                      "shrink-0 transition-colors",
+                      collapsed ? "h-[18px] w-[18px]" : "h-[16px] w-[16px]",
+                      isActive
+                        ? "text-foreground"
+                        : isFrozen
+                        ? "text-muted-foreground/40"
+                        : "text-muted-foreground"
+                    )}
+                    strokeWidth={isActive ? 2 : 1.5}
+                  />
+                  {!collapsed && (
+                    <>
+                      <span
+                        className={cn(
+                          "flex-1 text-[13px] truncate",
+                          /* Active: font-medium — visually distinct without being heavy */
+                          /* Inactive: font-normal — lowest weight, clean and minimal */
+                          isActive ? "font-medium" : "font-normal"
+                        )}
+                      >
+                        {item.title}
+                      </span>
+                      {subItems && (
+                        <ChevronDown
+                          className={cn(
+                            "h-3 w-3 shrink-0 text-muted-foreground/40 transition-transform duration-200",
+                            isAccordionOpen && "rotate-180"
+                          )}
+                        />
+                      )}
+                    </>
+                  )}
+                </Link>
+              );
+
+              if (collapsed) {
+                return (
+                  <Tooltip key={item.title}>
+                    <TooltipTrigger asChild>{linkEl}</TooltipTrigger>
+                    <TooltipContent
+                      side="right"
+                      sideOffset={12}
+                      /* Tooltip: font-medium — small text needs a little weight to read clearly */
+                      className="text-[10px] font-medium"
+                    >
+                      {item.title}
+                      {isFrozen && " (Coming Soon)"}
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              }
+
+              return (
+                <div key={item.title}>
+                  {linkEl}
+                  {subItems && isAccordionOpen && (
+                    <ul className="ml-[30px] mt-0.5 mb-1 space-y-0.5 border-l border-border/20 pl-3">
+                      {subItems.map((sub) => {
+                        const isSubActive = pathname === sub.href;
+                        return (
+                          <li key={sub.title}>
+                            <Link
+                              href={sub.href}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                toast.info(`${sub.title} details are under Phase 1 construction.`);
+                              }}
+                              className={cn(
+                                "flex items-center gap-1.5 py-1.5 text-[12px] transition-colors",
+                                /* Sub-item active: font-medium / inactive: font-normal */
+                                isSubActive
+                                  ? "text-foreground font-medium"
+                                  : "text-muted-foreground/65 hover:text-foreground font-normal"
+                              )}
+                            >
+                              <span
+                                className={cn(
+                                  "w-[3px] h-[3px] rounded-full shrink-0",
+                                  isSubActive ? "bg-foreground" : "bg-muted-foreground/30"
+                                )}
+                              />
+                              {sub.title}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </nav>
+
+        {/* ── Settings (Bottom) ── */}
+        <div className="border-t border-transparent p-3 space-y-1">
+          {collapsed ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/dashboard/settings"
+                  className={cn(
+                    "flex items-center justify-center h-9 w-9 mx-auto rounded-full transition-colors",
+                    pathname.startsWith("/dashboard/settings")
+                      ? "bg-[#4C1D95] hover:bg-[#3B0764] text-white shadow-xs"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                  )}
+                >
+                  <Settings
+                    className="h-[16px] w-[16px] shrink-0"
+                    strokeWidth={pathname.startsWith("/dashboard/settings") ? 2 : 1.5}
+                  />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={12} className="text-[10px] font-medium">
+                Settings
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <Link
+              href="/dashboard/settings"
+              className={cn(
+                "flex items-center gap-3 px-2 py-[7px] rounded-md text-[13px] transition-colors",
+                /* Settings active: font-medium / inactive: font-normal */
+                pathname.startsWith("/dashboard/settings")
+                  ? "text-foreground font-medium"
+                  : "text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 font-normal"
+              )}
+            >
+              <Settings
+                className={cn(
+                  "h-[16px] w-[16px] shrink-0",
+                  pathname.startsWith("/dashboard/settings")
+                    ? "text-foreground"
+                    : "text-muted-foreground"
+                )}
+                strokeWidth={pathname.startsWith("/dashboard/settings") ? 2 : 1.5}
+              />
+              <span>Settings</span>
+            </Link>
+          )}
+
+          {/* Expand is now handled by the logo hover in the collapsed header */}
+        </div>
+      </aside>
+    </div>
   );
 }

@@ -1,16 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSignUp, useClerk } from "@clerk/nextjs";
+import { useSignUp, useClerk, useAuth } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, ShieldCheck, CheckCircle2, ArrowRight } from "lucide-react";
 
 function Logo() {
   return (
     <div className="flex items-center gap-3">
-      <div className="w-9 h-9 rounded-xl bg-[#8B5CF6] flex items-center justify-center shadow-sm">
-        <span className="text-white font-bold text-sm tracking-tight">M</span>
-      </div>
+      <img 
+        src="/logo/mergex-logo.png" 
+        alt="MergeX Logo" 
+        className="w-9 h-9 object-contain shrink-0" 
+      />
       <div>
         <p className="text-sm font-semibold text-foreground tracking-tight leading-none">MergeX</p>
         <p className="text-xs text-muted-foreground mt-0.5">Sales OS</p>
@@ -113,11 +115,19 @@ function Success({ name }: { name: string }) {
 type Step = "details" | "verify" | "success";
 
 export default function SignUpPage() {
+  const { isLoaded, userId } = useAuth();
   const { signUp } = useSignUp();
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const inviteEmail = searchParams.get("email");
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isLoaded && userId) {
+      router.replace("/workspaces");
+    }
+  }, [isLoaded, userId, router]);
 
   const [step, setStep] = useState<Step>("details");
   const [firstName, setFirstName] = useState("");

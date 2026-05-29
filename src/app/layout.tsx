@@ -7,7 +7,6 @@ import {
   SignInButton,
   SignUpButton,
 } from "@clerk/nextjs";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
 const inter = Inter({
@@ -132,7 +131,7 @@ export const viewport: Viewport = {
 
 // ── Root Layout ───────────────────────────────────────────
 
-import { ThemeProvider } from "@/components/theme-provider";
+import { AppProvider } from "@/providers/AppProvider";
 
 export default function RootLayout({
   children,
@@ -145,35 +144,37 @@ export default function RootLayout({
         {/* Preconnect to speed up Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* Clash Display - loaded via Fontshare CDN */}
+        <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://api.fontshare.com" />
+        <link
+          rel="stylesheet"
+          href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap"
+        />
       </head>
       <body
-        className={`${inter.variable} ${cormorant.variable} font-sans antialiased bg-background text-foreground`}
+        className={`${inter.variable} ${cormorant.variable} font-sans antialiased text-foreground`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <AppProvider>
           <ClerkProvider>
-            <TooltipProvider delayDuration={300}>
-              {/* Auth-aware global header — only visible on non-dashboard public routes */}
-              <Show when="signed-out">
-                <header className="sr-only" aria-hidden>
-                  <SignInButton />
-                  <SignUpButton />
-                </header>
-              </Show>
-              <Show when="signed-in">
-                <header className="sr-only" aria-hidden>
-                  <UserButton />
-                </header>
-              </Show>
-              {children}
-            </TooltipProvider>
+            {/* Auth-aware global header — only visible on non-dashboard public routes */}
+            <Show when="signed-out">
+              <header className="sr-only" aria-hidden>
+                <SignInButton />
+                <SignUpButton />
+              </header>
+            </Show>
+            <Show when="signed-in">
+              <header className="sr-only" aria-hidden>
+                <UserButton />
+              </header>
+            </Show>
+            {children}
           </ClerkProvider>
-        </ThemeProvider>
+        </AppProvider>
       </body>
     </html>
   );
 }
+

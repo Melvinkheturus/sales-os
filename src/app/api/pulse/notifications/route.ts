@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
-import { markAllRead } from "@/lib/pulse";
+import { markAllRead } from "@/lib/notifications";
 import { NotificationPriority, NotificationType } from "@prisma/client";
 
 // GET /api/pulse/notifications

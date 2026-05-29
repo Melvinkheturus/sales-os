@@ -1,4 +1,4 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import type { PermissionKey, PermissionString } from "./permissions";
@@ -10,12 +10,12 @@ export type AuthUser = {
   id: string;
   clerkId: string;
   email: string;
-  employeeId: string | null;
   firstName: string | null;
   lastName: string | null;
   avatarUrl: string | null;
   isActive: boolean;
-  organizationId: string;
+  brandId: string | null;
+  defaultBrandId: string | null;
   role: {
     id: string;
     name: string;
@@ -30,18 +30,19 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   const { userId } = await auth();
   if (!userId) return null;
 
-  const user = await db.user.findUnique({
+  let user = await db.user.findUnique({
     where: { clerkId: userId },
     select: {
       id: true,
       clerkId: true,
       email: true,
-      employeeId: true,
       firstName: true,
       lastName: true,
       avatarUrl: true,
       isActive: true,
-      organizationId: true,
+      brandId: true,
+      defaultBrandId: true,
+      roleId: true,
       role: {
         select: {
           id: true,
@@ -59,9 +60,151 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     },
   });
 
+  if (!user) {
+    // Proactive Auto-Provisioning for local dev when Clerk webhooks are bypassed
+    try {
+      const clerkUser = await currentUser();
+      if (clerkUser) {
+        const primaryEmail = clerkUser.emailAddresses.find(
+          (e) => e.id === clerkUser.primaryEmailAddressId
+        )?.emailAddress ?? clerkUser.emailAddresses[0]?.emailAddress ?? "";
+
+        if (primaryEmail) {
+          const userCount = await db.user.count();
+          let roleId: string | null = null;
+          let brandId: string | null = null;
+          let onboardingState: "PLATFORM_SETUP" | "PROFILE_SETUP" | "COMPLETE" = "PROFILE_SETUP";
+
+          if (userCount === 0) {
+            const superAdminRole = await db.role.findFirst({ where: { name: "super_admin" } });
+            roleId = superAdminRole?.id ?? null;
+            onboardingState = "PLATFORM_SETUP";
+          } else {
+            const invite = await db.userInvite.findFirst({
+              where: { email: primaryEmail, status: "PENDING" },
+              orderBy: { createdAt: "desc" },
+            });
+
+            if (invite) {
+              roleId = invite.roleId;
+              brandId = invite.brandId;
+              onboardingState = "PROFILE_SETUP";
+
+              await db.userInvite.update({
+                where: { id: invite.id },
+                data: { status: "ACCEPTED", acceptedAt: new Date() },
+              });
+            } else {
+              const viewerRole = await db.role.findFirst({ where: { name: "viewer" } });
+              roleId = viewerRole?.id ?? null;
+            }
+          }
+
+          if (roleId) {
+            const createdUser = await db.user.upsert({
+              where: { clerkId: userId },
+              create: {
+                clerkId: userId,
+                email: primaryEmail,
+                firstName: clerkUser.firstName,
+                lastName: clerkUser.lastName,
+                avatarUrl: clerkUser.imageUrl,
+                roleId,
+                brandId,
+                isActive: true,
+                onboardingState,
+              },
+              update: {
+                isActive: true,
+                email: primaryEmail,
+                firstName: clerkUser.firstName,
+                lastName: clerkUser.lastName,
+                avatarUrl: clerkUser.imageUrl,
+              }
+            });
+
+            // Set Clerk publicMetadata so the middleware redirects correctly
+            const client = await clerkClient();
+            await client.users.updateUserMetadata(userId, {
+              publicMetadata: {
+                onboardingState,
+                role: onboardingState === "PLATFORM_SETUP" ? "super_admin" : "user",
+              },
+            });
+
+            user = await db.user.findUnique({
+              where: { id: createdUser.id },
+              select: {
+                id: true,
+                clerkId: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                avatarUrl: true,
+                isActive: true,
+                brandId: true,
+                defaultBrandId: true,
+                roleId: true,
+                role: {
+                  select: {
+                    id: true,
+                    name: true,
+                    label: true,
+                    permissions: {
+                      select: {
+                        permission: {
+                          select: { module: true, action: true },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            });
+            console.log(`[auth-auto-provision] Provisioned user ${primaryEmail} with roleId=${roleId}`);
+          }
+        }
+      }
+    } catch (e) {
+      console.error("[auth-auto-provision] Failed to auto-provision user:", e);
+    }
+  }
+
   if (!user || !user.isActive) return null;
 
-  const permissions = user.role.permissions.map(
+  // Layer 2 Recovery: If user's email matches ROOT_ADMIN_EMAIL, dynamically force-inject super_admin role/rights
+  const rootAdminEmail = process.env.ROOT_ADMIN_EMAIL;
+  let activeRole = user.role;
+
+  if (rootAdminEmail && user.email.toLowerCase() === rootAdminEmail.toLowerCase()) {
+    const superAdminRole = await db.role.findFirst({
+      where: { name: "super_admin" },
+      select: {
+        id: true,
+        name: true,
+        label: true,
+        permissions: {
+          select: {
+            permission: {
+              select: { module: true, action: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (superAdminRole && user.role.name !== "super_admin") {
+      // Auto-correct DB record to super_admin
+      await db.user.update({
+        where: { id: user.id },
+        data: { roleId: superAdminRole.id }
+      });
+      activeRole = superAdminRole;
+      console.warn(`[recovery] Emergency ROOT_ADMIN_EMAIL match detected. Automatically restored super_admin rights for ${user.email}.`);
+    }
+  }
+
+  const permissions = activeRole.permissions.map(
     (rp) => `${rp.permission.module}.${rp.permission.action}` as PermissionString
   );
 
@@ -69,16 +212,16 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     id: user.id,
     clerkId: user.clerkId,
     email: user.email,
-    employeeId: user.employeeId,
     firstName: user.firstName,
     lastName: user.lastName,
     avatarUrl: user.avatarUrl,
     isActive: user.isActive,
-    organizationId: user.organizationId,
+    brandId: user.brandId,
+    defaultBrandId: user.defaultBrandId,
     role: {
-      id: user.role.id,
-      name: user.role.name,
-      label: user.role.label,
+      id: activeRole.id,
+      name: activeRole.name,
+      label: activeRole.label,
     },
     permissions,
   };
@@ -121,7 +264,7 @@ export async function requirePermission(key: PermissionKey): Promise<AuthUser> {
 
 export async function syncClerkUser(
   clerkUserId: string,
-  orgId: string,
+  brandId: string | null,
   roleId: string
 ) {
   const clerkUser = await currentUser();
@@ -135,7 +278,7 @@ export async function syncClerkUser(
       firstName: clerkUser.firstName,
       lastName: clerkUser.lastName,
       avatarUrl: clerkUser.imageUrl,
-      organizationId: orgId,
+      brandId,
       roleId,
     },
     update: {
@@ -152,8 +295,7 @@ export async function syncClerkUser(
 export async function writeAuditLog(params: {
   userId?: string;
   email: string;
-  action: "LOGIN_SUCCESS" | "LOGIN_FAILED" | "LOGIN_OTP_SENT" | "LOGIN_OTP_FAILED" | "LOGIN_LOCKED" | "LOGOUT" | "PASSWORD_RESET" | "ROLE_CHANGED" | "ACCOUNT_DEACTIVATED";
-  method?: "GOOGLE" | "EMAIL_OTP" | "EMPLOYEE_ID";
+  action: "LOGIN_SUCCESS" | "LOGIN_FAILED" | "LOGOUT" | "ROLE_CHANGED" | "ACCOUNT_DEACTIVATED";
   ipAddress?: string;
   userAgent?: string;
   metadata?: Record<string, unknown>;
@@ -163,7 +305,6 @@ export async function writeAuditLog(params: {
       userId: params.userId,
       email: params.email,
       action: params.action,
-      method: params.method,
       ipAddress: params.ipAddress,
       userAgent: params.userAgent,
       // Cast to JSON-compatible type for Prisma

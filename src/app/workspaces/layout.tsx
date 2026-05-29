@@ -1,0 +1,18 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Workspaces | MergeX Sales OS",
+  description: "Choose your brand workspace to get started.",
+};
+
+export default function WorkspacesLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="min-h-screen relative">
+      {children}
+    </div>
+  );
+}

@@ -9,7 +9,7 @@ export async function GET() {
 
   const user = await db.user.findUnique({
     where: { clerkId },
-    select: { id: true, organizationId: true },
+    select: { id: true, brandId: true },
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
@@ -18,7 +18,8 @@ export async function GET() {
     where: { userId: user.id },
     create: {
       userId: user.id,
-      organizationId: user.organizationId,
+      inAppEnabled: true,
+      emailEnabled: true,
     },
     update: {},
   });
@@ -33,20 +34,25 @@ export async function PUT(request: Request) {
 
   const user = await db.user.findUnique({
     where: { clerkId },
-    select: { id: true, organizationId: true },
+    select: { id: true, brandId: true },
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
   const body = await request.json();
 
+  // Pick only valid schema fields
+  const data = {
+    inAppEnabled: body.inAppEnabled ?? true,
+    emailEnabled: body.emailEnabled ?? true,
+  };
+
   const updated = await db.notificationPreference.upsert({
     where: { userId: user.id },
     create: {
       userId: user.id,
-      organizationId: user.organizationId,
-      ...body,
+      ...data,
     },
-    update: body,
+    update: data,
   });
 
   return NextResponse.json({ preferences: updated });

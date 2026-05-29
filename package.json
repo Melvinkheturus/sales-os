@@ -14,6 +14,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@hookform/resolvers": "^5.4.0",
     "@neondatabase/serverless": "^1.1.0",
     "@paper-design/shaders": "^0.0.76",
     "@prisma/adapter-neon": "^7.8.0",
@@ -48,6 +49,7 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "react-hook-form": "^7.76.1",
     "recharts": "^3.8.1",
     "resend": "^6.12.3",
     "shadcn": "^4.7.0",
@@ -70,8 +72,5 @@
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
     "typescript": "^5"
-  },
-  "prisma": {
-    "seed": "npx tsx prisma/seed.ts"
   }
 }

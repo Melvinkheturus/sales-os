@@ -92,17 +92,21 @@ model RolePermission {
 // ── 4. Brand / Division ─────────────────────────
 model Brand {
   id          String   @id @default(cuid())
-  name        String   // e.g. "MergeX", "OVRN Studios", "MergeX Academy"
+  name        String
   slug        String   @unique
   logoUrl     String?
-  color       String?  @default("violet")  // accent color token: violet|indigo|rose|amber|emerald|sky
-  description String?                      // short workspace description shown on cards
-  status      String   @default("active")  // "active" | "archived" — never hard-delete
+  color       String?  @default("violet")
+  description String?
+  status      String   @default("active")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   invites    UserInvite[]
   userAccess UserBrandAccess[]
+  leads      Lead[]
+  sources    LeadSource[]
+  stages     LeadStage[]
+  clients    Client[]
 }
 
 // ── 5. User (Clerk Identity Mapping) ─────────────
@@ -114,24 +118,25 @@ model User {
   lastName         String?
   username         String?         @unique
   avatarUrl        String?
-  designation      String?         // e.g. "CX Executive", "Engagement Manager"
+  designation      String?
   roleId           String
   isActive         Boolean         @default(true)
   onboardingState  OnboardingState @default(PROFILE_SETUP)
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 
-  // Active Brand Workspace (DB source of truth — no localStorage)
-  activeBrandId    String?         // ID of the currently active brand workspace
-
-  // Workspace preferences
-  theme            String?         @default("system")   // "light" | "dark" | "system"
+  activeBrandId    String?
+  theme            String?         @default("system")
 
   role          Role                    @relation(fields: [roleId], references: [id])
   loginAudits   LoginAudit[]
   notifications Notification[]
   preference    NotificationPreference?
   brandAccess   UserBrandAccess[]
+  leadsOwned    Lead[]                  @relation("LeadOwner")
+  activities    Activity[]
+  meetings      Meeting[]               @relation("MeetingOrganizer")
+  clientsManaged Client[]               @relation("EngagementManager")
 
   @@index([clerkId])
   @@index([roleId])
@@ -156,12 +161,12 @@ model UserBrandAccess {
 model UserInvite {
   id         String       @id @default(cuid())
   email      String
-  roleId     String?      // Pre-assigned Role ID
-  brandId    String       // Pre-assigned target Brand ID
+  roleId     String?
+  brandId    String
   token      String       @unique
   status     InviteStatus @default(PENDING)
   expiresAt  DateTime
-  invitedBy  String?      // Clerk User ID of inviter
+  invitedBy  String?
   acceptedAt DateTime?
   createdAt  DateTime     @default(now())
 
@@ -197,7 +202,7 @@ model Notification {
   title      String
   message    String
   isRead     Boolean              @default(false)
-  link       String?              // Navigation Target Href
+  link       String?
   userId     String
   createdAt  DateTime             @default(now())
 
@@ -215,4 +220,160 @@ model NotificationPreference {
   emailEnabled Boolean @default(true)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ── 10. CRM Models ──────────────────────────────
+
+model Lead {
+  id               String            @id @default(cuid())
+  brandId          String
+  companyName      String
+  contactPerson    String
+  email            String?
+  phone            String?
+  website          String?
+  industry         String?
+  sourceId         String?
+  stageId          String?
+  ownerId          String?
+  icpScore         Int               @default(0)
+  temperature      String            @default("COLD")
+  expectedValue    Decimal?
+  priority         String            @default("MEDIUM")
+  services         String[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  // Business Review fields
+  currentSituation String?
+  painPoints       String[]
+  opportunityNotes String?
+
+  // BANT fields
+  bantBudget       Int               @default(0)
+  bantAuthority    Int               @default(0)
+  bantNeed         Int               @default(0)
+  bantTimeline     Int               @default(0)
+  bantScore        Int               @default(0)
+
+  // Win/Loss fields
+  winLossStatus    String?
+  winLossReason    String?
+  winLossNotes     String?
+
+  brand            Brand             @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  source           LeadSource?       @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  stage            LeadStage?        @relation(fields: [stageId], references: [id], onDelete: SetNull)
+  owner            User?             @relation("LeadOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  activities       Activity[]
+  meetings         Meeting[]
+  proposals        Proposal[]
+
+  @@index([brandId])
+  @@index([stageId])
+  @@index([ownerId])
+}
+
+model LeadSource {
+  id        String   @id @default(cuid())
+  brandId   String
+  name      String
+  isSystem  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  brand     Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  leads     Lead[]
+
+  @@unique([brandId, name])
+}
+
+model LeadStage {
+  id        String   @id @default(cuid())
+  brandId   String
+  name      String
+  label     String
+  color     String?
+  order     Int      @default(0)
+  isSystem  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  brand     Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  leads     Lead[]
+
+  @@unique([brandId, name])
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  leadId      String
+  userId      String
+  type        String   // "CALL" | "EMAIL" | "WHATSAPP" | "NOTE" | "TASK"
+  content     String
+  performedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+}
+
+model Meeting {
+  id          String   @id @default(cuid())
+  leadId      String
+  organizerId String
+  title       String
+  scheduledAt DateTime
+  duration    Int      @default(30)
+  mode        String   // "GOOGLE_MEET" | "ZOOM" | "PHONE" | "IN_PERSON"
+  meetingUrl  String?
+  summary     String?
+  outcome     String?
+  status      String   @default("SCHEDULED")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  organizer   User     @relation("MeetingOrganizer", fields: [organizerId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+}
+
+model Proposal {
+  id             String    @id @default(cuid())
+  leadId         String
+  proposalNumber String
+  title          String
+  status         String    @default("DRAFT")
+  sentAt         DateTime?
+  value          Decimal
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  lead           Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@unique([leadId, proposalNumber])
+}
+
+model Client {
+  id                  String   @id @default(cuid())
+  brandId             String
+  companyName         String
+  contactPerson       String
+  email               String?
+  phone               String?
+  website             String?
+  engagementManagerId String?
+  onboardingStatus    String   @default("PENDING")
+  status              String   @default("active")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  brand               Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  engagementManager   User?    @relation("EngagementManager", fields: [engagementManagerId], references: [id], onDelete: SetNull)
+
+  @@index([brandId])
 }

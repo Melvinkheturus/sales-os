@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
+import { seedBrandDefaults } from "@/lib/crm/seed-defaults";
 
 interface BrandInput {
   name: string;
@@ -37,6 +38,16 @@ export async function POST(req: Request) {
       data: brands.map((b: BrandInput) => ({ name: b.name, slug: b.slug })),
       skipDuplicates: true,
     });
+
+    // Seed CRM defaults for these new brands
+    const createdBrands = await db.brand.findMany({
+      where: {
+        slug: {
+          in: brands.map((b: BrandInput) => b.slug),
+        },
+      },
+    });
+    await Promise.all(createdBrands.map((b) => seedBrandDefaults(b.id)));
 
     // 2. Update user onboardingState in DB
     const dbUser = await db.user.findUnique({ where: { clerkId: userId } });

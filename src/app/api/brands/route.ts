@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
+import { seedBrandDefaults } from "@/lib/crm/seed-defaults";
 
 export async function GET() {
   const { userId: clerkId } = await auth();
@@ -55,6 +56,10 @@ export async function POST(req: Request) {
         logoUrl: typeof logoUrl === "string" ? logoUrl : null,
       },
     });
+
+    // Auto-seed default CRM stages & sources
+    await seedBrandDefaults(brand.id);
+
     return NextResponse.json(brand);
   } catch (error) {
     console.error("Failed to create brand:", error);

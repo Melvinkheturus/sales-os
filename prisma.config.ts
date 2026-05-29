@@ -9,7 +9,6 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
-    seed: "npx tsx prisma/seed.ts",
   },
   datasource: {
     // Prisma v7: use DIRECT_URL (non-pooler) for migrate — bypasses Neon's pgBouncer

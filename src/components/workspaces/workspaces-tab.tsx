@@ -131,11 +131,11 @@ export function WorkspacesTab({
                   disabled={isLoading}
                   className={cn(
                     "group relative flex flex-col justify-between text-left p-5.5 rounded-xl",
-                    "bg-card text-card-foreground dark:bg-[#0E0E12] border transition-all duration-300 cursor-pointer min-h-[110px]",
-                    "hover:border-purple-500/35 hover:shadow-xl hover:-translate-y-0.5",
+                    "bg-card text-card-foreground dark:bg-[#0E0E12] border cursor-pointer min-h-[110px] transition-colors duration-200",
+                    "hover:border-neutral-300 dark:hover:border-white/10",
                     "focus:outline-none focus-visible:ring-1 focus-visible:ring-[#8B5CF6]/50",
                     isActive
-                      ? "border-purple-500/40 shadow-lg shadow-purple-500/5"
+                      ? "border-purple-500/60"
                       : "border-neutral-200 dark:border-white/5"
                   )}
                   style={{
@@ -144,11 +144,6 @@ export function WorkspacesTab({
                     transform: mounted ? "translateY(0)" : "translateY(12px)",
                   }}
                 >
-                  {/* Glowing highlight point on hover */}
-                  <div className={cn(
-                    "absolute inset-x-0 top-0 h-[1.5px] bg-linear-to-r from-transparent via-transparent to-transparent group-hover:via-purple-500/40 transition-all duration-500 rounded-t-xl"
-                  )} />
-
                   {/* Loading Overlay */}
                   {isLoading && (
                     <div className="absolute inset-0 rounded-xl flex items-center justify-center bg-black/60 backdrop-blur-[1px] z-50">
@@ -169,6 +164,7 @@ export function WorkspacesTab({
                             src={brand.logoUrl}
                             alt={brand.name}
                             fill
+                            sizes="34px"
                             className="object-cover"
                           />
                         ) : (
@@ -176,7 +172,7 @@ export function WorkspacesTab({
                         )}
                       </div>
                       <div>
-                        <h3 className="text-xs font-bold text-foreground group-hover:text-purple-400 transition-colors leading-tight">
+                        <h3 className="text-xs font-bold text-foreground leading-tight">
                           {brand.name}
                         </h3>
                         {brand.description ? (

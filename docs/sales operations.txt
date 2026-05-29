@@ -1,0 +1,1865 @@
+# MergeX Customer Lifecycle System
+
+This is the high-level lifecycle architecture for MergeX
+
+The system is divided into:
+
+1. Lead Operations (Pre-Sales Layer)
+2. Sales Conversion (Conversion Layer)
+3. Client Execution (Post-Sales Layer)
+
+Each layer has:
+
+* a clear operational purpose,
+* defined progression,
+* and non-overlapping responsibilities.
+
+---
+
+# PHASE A — LEAD OPERATIONS
+
+# (Pre-Sales Layer)
+
+## Purpose
+
+Identify, understand, qualify, and nurture potential opportunities before investing sales-conversion effort.
+
+This phase is primarily:
+
+* research-driven,
+* qualification-driven,
+* and opportunity-focused.
+
+Most leads will stay in this layer.
+
+---
+
+# 1. Lead Intake
+
+## Purpose
+
+Capture and organize all incoming opportunities into the system.
+
+---
+
+## Lead Sources
+
+* Inbound
+* Outbound
+* Referrals
+* Partnerships
+* Events
+* LinkedIn
+* Instagram
+* WhatsApp
+* Website
+* Email
+
+---
+
+## Includes
+
+* source tagging
+* contact capture
+* owner assignment
+* lead entry timestamp
+* basic business details
+
+---
+
+## Output
+
+A raw lead enters the system.
+
+---
+
+# 2. Business Review
+
+## Purpose
+
+Research and analyze the business before outreach or qualification.
+
+This stage combines:
+
+* lead enrichment,
+* business analysis,
+* opportunity discovery,
+* and pain-point identification.
+
+---
+
+## Includes
+
+### Business Research
+
+* company/business profile
+* industry
+* size
+* location
+* social presence
+* website/ecommerce presence
+* business model
+* operational maturity
+
+---
+
+### Opportunity Analysis
+
+* growth gaps
+* operational inefficiencies
+* missing systems
+* conversion bottlenecks
+* retention weaknesses
+* customer experience issues
+* monetization gaps
+
+---
+
+### Strategic Positioning
+
+* outreach angle
+* probable pain points
+* relevant MergeX services
+* value proposition direction
+
+---
+
+## Example
+
+```txt id="hgyfpy"
+Menswear brand
+130k followers
+Strong engagement
+No ecommerce system
+No CRM
+No retention workflow
+
+Opportunity:
+Ecommerce + retention automation
+```
+
+---
+
+## Output
+
+A clear understanding of:
+
+* the business,
+* the probable problems,
+* and the opportunity angle.
+
+---
+
+# 3. Lead Qualification
+
+## Purpose
+
+Determine whether the lead is commercially and operationally worth pursuing.
+
+---
+
+## Qualification Areas
+
+* ICP fit
+* urgency
+* budget likelihood
+* decision-maker access
+* operational feasibility
+* service alignment
+* growth potential
+
+---
+
+## Output
+
+Lead becomes:
+
+* Qualified
+  or
+* Disqualified
+
+---
+
+# 4. Lead Classification
+
+## Purpose
+
+Determine sales readiness level.
+
+---
+
+## Classifications
+
+| Type    | Meaning                          |
+| ------- | -------------------------------- |
+| Hot     | Ready for sales conversation     |
+| Warm    | Needs nurturing                  |
+| Cold    | Low immediate probability        |
+| Archive | Dead / irrelevant / disqualified |
+
+---
+
+## Output
+
+Lead is categorized for operational handling.
+
+---
+
+# 5. Lead Nurturing
+
+## Purpose
+
+Move Warm/Cold leads toward conversion readiness.
+
+---
+
+## Includes
+
+* follow-ups
+* nurturing sequences
+* relationship building
+* re-engagement
+* educational touchpoints
+* value-driven outreach
+* multi-channel communication
+
+---
+
+## Channels
+
+* WhatsApp
+* Email
+* LinkedIn
+* Calls
+* Meetings
+* Social
+
+---
+
+## Goal
+
+Convert:
+
+* Warm → Hot
+* Cold → Warm/Hot
+
+---
+
+# INTERNAL CONTROL
+
+# Meeting Readiness Check
+
+(Not a pipeline stage)
+
+Before a lead can move into Sales Conversion:
+
+---
+
+## Required Checks
+
+✅ Business Review completed
+✅ Lead Qualification completed
+✅ Pain point identified
+✅ Outreach performed
+✅ Lead classified as HOT
+✅ Relevant stakeholder/contact identified
+
+---
+
+## Result
+
+Discovery Meeting becomes unlocked.
+
+---
+
+# PHASE B — SALES CONVERSION
+
+# (Conversion Layer)
+
+## Purpose
+
+Convert qualified opportunities into paying clients.
+
+This phase is:
+
+* consultative,
+* strategic,
+* and commercially focused.
+
+Only validated HOT leads enter this layer.
+
+---
+
+# 6. Discovery Meeting
+
+## Purpose
+
+Understand the business deeply and uncover real operational needs.
+
+---
+
+## Includes
+
+* discovery questions
+* operational discussions
+* pain analysis
+* business goals
+* stakeholder mapping
+* budget discussions
+* timeline discussions
+* expectation understanding
+
+---
+
+## Goal
+
+Clearly define:
+
+# “What problem are we solving?”
+
+---
+
+## Output
+
+Detailed business understanding and requirements clarity.
+
+---
+
+# 7. Solution Planning
+
+## Purpose
+
+Internally determine the right solution direction.
+
+---
+
+## Includes
+
+* feasibility review
+* internal discussion
+* scope shaping
+* pricing direction
+* delivery considerations
+* execution planning
+* expectation alignment
+
+---
+
+## Goal
+
+Determine:
+
+* can MergeX solve this properly?
+* what is the best solution path?
+
+---
+
+## Output
+
+Decision to:
+
+* proceed,
+* revise,
+* or reject.
+
+---
+
+# 8. Proposal & Commercials
+
+## Purpose
+
+Present the formal business solution and commercial structure.
+
+---
+
+## Includes
+
+* proposal
+* pricing
+* quotation
+* deliverables
+* timelines
+* scope definition
+* commercial negotiation
+
+---
+
+## Goal
+
+Align business expectations and commercial agreement.
+
+---
+
+## Output
+
+Client receives official commercial proposal.
+
+---
+
+# 9. Agreement & Closure
+
+## Purpose
+
+Finalize the commercial commitment.
+
+---
+
+## Includes
+
+* agreements
+* approvals
+* invoice
+* payment
+* procurement process
+* signatures
+* confirmation
+
+---
+
+## Outcomes
+
+### Won
+
+Lead becomes official client.
+
+### Closed Lost
+
+Lead exits active sales pipeline.
+
+---
+
+# 10. Engagement Handoff
+
+## Purpose
+
+Transfer ownership from Sales → Execution.
+
+---
+
+## Includes
+
+* engagement manager assignment
+* handoff briefing
+* client context transfer
+* internal notes
+* expectation transfer
+* kickoff preparation
+
+---
+
+## Goal
+
+Ensure smooth transition into execution.
+
+---
+
+## Output
+
+Execution team officially takes ownership.
+
+---
+
+# PHASE C — CLIENT EXECUTION
+
+# (Post-Sales Layer)
+
+## Purpose
+
+Deliver successful outcomes, maintain relationships, and grow long-term client value.
+
+This phase is:
+
+* delivery-focused,
+* relationship-driven,
+* and retention-oriented.
+
+---
+
+# 11. Client Onboarding
+
+## Purpose
+
+Prepare the client and internal team for execution.
+
+---
+
+## Includes
+
+* kickoff meeting
+* onboarding checklist
+* access collection
+* document collection
+* communication setup
+* milestone planning
+* stakeholder alignment
+* expectation setting
+
+---
+
+## Goal
+
+Make the client execution-ready.
+
+---
+
+## Output
+
+Project officially enters delivery stage.
+
+---
+
+# 12. Execution & Delivery
+
+## Purpose
+
+Execute the actual services and deliverables.
+
+---
+
+## Includes
+
+* consulting
+* implementation
+* operations
+* project execution
+* workflow execution
+* reporting
+* reviews
+* collaboration
+
+---
+
+## Goal
+
+Deliver measurable business outcomes.
+
+---
+
+## Output
+
+Services successfully delivered.
+
+---
+
+# 13. Client Success & Growth
+
+## Purpose
+
+Maintain long-term relationship value and growth opportunities.
+
+---
+
+## Includes
+
+* relationship management
+* client health monitoring
+* support
+* renewals
+* upsells
+* cross-sells
+* referrals
+* long-term strategic growth
+
+---
+
+## Goal
+
+Increase:
+
+* retention,
+* satisfaction,
+* lifetime value,
+* and expansion opportunities.
+
+---
+
+# FINAL MERGEX OPERATIONAL LIFECYCLE
+
+# PHASE A — LEAD OPERATIONS
+
+(Pre-Sales Layer)
+
+1. Lead Intake
+2. Business Review
+3. Lead Qualification
+4. Lead Classification
+5. Lead Nurturing
+
+### Internal Gate:
+
+Meeting Readiness Check
+
+---
+
+# PHASE B — SALES CONVERSION
+
+(Conversion Layer)
+
+6. Discovery Meeting
+7. Solution Planning
+8. Proposal & Commercials
+9. Agreement & Closure
+10. Engagement Handoff
+
+---
+
+# PHASE C — CLIENT EXECUTION
+
+(Post-Sales Layer)
+
+11. Client Onboarding
+12. Execution & Delivery
+13. Client Success & Growth
+
+---
+
+
+# MergeX Operational Layer Mapping
+
+# (13 Stages × Operational Layers)
+
+This is the finalized operational mapping for the MergeX Sales OS.
+
+---
+
+# LEGEND
+
+| Layer             | Meaning                             |
+| ----------------- | ----------------------------------- |
+| Timeline          | Activity history                    |
+| Notes             | Internal collaboration              |
+| Tasks             | Action items/reminders              |
+| SLA               | Response/processing standards       |
+| Ownership         | Responsible person                  |
+| Escalation        | Delayed/stalled handling            |
+| Lost Reason       | Closed-lost intelligence            |
+| Knowledge Capture | Reusable business insights          |
+| Client Health     | Relationship risk/growth monitoring |
+| Reopen Logic      | Re-entry/reactivation handling      |
+
+---
+
+# PHASE A — LEAD OPERATIONS
+
+# (Pre-Sales Layer)
+
+---
+
+# 1. Lead Intake
+
+## Operational Layers
+
+| O.L        | Active |
+| ---------- | ------ |
+| Timeline   | ✅      |
+| Notes      | ✅      |
+| Tasks      | ✅      |
+| SLA        | ✅      |
+| Ownership  | ✅      |
+| Escalation | ✅      |
+
+---
+
+## Why?
+
+This stage needs:
+
+* fast response,
+* ownership assignment,
+* intake accountability.
+
+No intelligence layers needed yet.
+
+---
+
+# 2. Business Review
+
+## Operational Layers
+
+| O.L               | Active |
+| ----------------- | ------ |
+| Timeline          | ✅      |
+| Notes             | ✅      |
+| Tasks             | ✅      |
+| SLA               | ✅      |
+| Ownership         | ✅      |
+| Knowledge Capture | ✅      |
+
+---
+
+## Why?
+
+This stage generates:
+
+* business insights,
+* opportunity observations,
+* reusable patterns.
+
+---
+
+# 3. Lead Qualification
+
+## Operational Layers
+
+| O.L               | Active |
+| ----------------- | ------ |
+| Timeline          | ✅      |
+| Notes             | ✅      |
+| Tasks             | ✅      |
+| Ownership         | ✅      |
+| Knowledge Capture | ✅      |
+
+---
+
+## Why?
+
+Qualification creates:
+
+* ICP intelligence,
+* qualification patterns,
+* strategic insights.
+
+Less SLA-heavy.
+
+---
+
+# 4. Lead Classification
+
+## Operational Layers
+
+| O.L       | Active |
+| --------- | ------ |
+| Timeline  | ✅      |
+| Notes     | ✅      |
+| Ownership | ✅      |
+
+---
+
+## Why?
+
+This is a lightweight decision stage.
+
+No need for:
+
+* escalations,
+* SLAs,
+* heavy tasking.
+
+---
+
+# 5. Lead Nurturing
+
+## Operational Layers
+
+| O.L               | Active |
+| ----------------- | ------ |
+| Timeline          | ✅      |
+| Notes             | ✅      |
+| Tasks             | ✅      |
+| SLA               | ✅      |
+| Ownership         | ✅      |
+| Escalation        | ✅      |
+| Knowledge Capture | ✅      |
+| Reopen Logic      | ✅      |
+
+---
+
+## Why?
+
+This stage handles:
+
+* long-term engagement,
+* dormant leads,
+* reactivation,
+* communication cadence.
+
+One of the most operationally active stages.
+
+---
+
+# PHASE B — SALES CONVERSION
+
+# (Conversion Layer)
+
+---
+
+# 6. Discovery Meeting
+
+## Operational Layers
+
+| O.L               | Active |
+| ----------------- | ------ |
+| Timeline          | ✅      |
+| Notes             | ✅      |
+| Tasks             | ✅      |
+| SLA               | ✅      |
+| Ownership         | ✅      |
+| Escalation        | ✅      |
+| Knowledge Capture | ✅      |
+
+---
+
+## Why?
+
+Critical intelligence stage.
+
+High collaboration + accountability.
+
+---
+
+# 7. Solution Planning
+
+## Operational Layers
+
+| O.L               | Active |
+| ----------------- | ------ |
+| Timeline          | ✅      |
+| Notes             | ✅      |
+| Tasks             | ✅      |
+| Ownership         | ✅      |
+| Knowledge Capture | ✅      |
+| Escalation        | ✅      |
+
+---
+
+## Why?
+
+Internal planning + feasibility stage.
+
+Needs:
+
+* collaboration,
+* decision tracking,
+* strategic documentation.
+
+---
+
+# 8. Proposal & Commercials
+
+## Operational Layers
+
+| O.L               | Active |
+| ----------------- | ------ |
+| Timeline          | ✅      |
+| Notes             | ✅      |
+| Tasks             | ✅      |
+| SLA               | ✅      |
+| Ownership         | ✅      |
+| Escalation        | ✅      |
+| Lost Reason       | ✅      |
+| Knowledge Capture | ✅      |
+
+---
+
+## Why?
+
+This is:
+
+* negotiation-heavy,
+* commercially sensitive,
+* high-loss-risk stage.
+
+Critical for business intelligence.
+
+---
+
+# 9. Agreement & Closure
+
+## Operational Layers
+
+| O.L          | Active |
+| ------------ | ------ |
+| Timeline     | ✅      |
+| Notes        | ✅      |
+| Tasks        | ✅      |
+| SLA          | ✅      |
+| Ownership    | ✅      |
+| Escalation   | ✅      |
+| Lost Reason  | ✅      |
+| Reopen Logic | ✅      |
+
+---
+
+## Why?
+
+This stage handles:
+
+* closures,
+* stalled deals,
+* lost deals,
+* reopening opportunities.
+
+---
+
+# 10. Engagement Handoff
+
+## Operational Layers
+
+| O.L               | Active |
+| ----------------- | ------ |
+| Timeline          | ✅      |
+| Notes             | ✅      |
+| Tasks             | ✅      |
+| SLA               | ✅      |
+| Ownership         | ✅      |
+| Escalation        | ✅      |
+| Knowledge Capture | ✅      |
+
+---
+
+## Why?
+
+This is:
+
+# operational continuity stage.
+
+Bad handoffs destroy delivery quality.
+
+---
+
+# PHASE C — CLIENT EXECUTION
+
+# (Post-Sales Layer)
+
+---
+
+# 11. Client Onboarding
+
+## Operational Layers
+
+| O.L           | Active |
+| ------------- | ------ |
+| Timeline      | ✅      |
+| Notes         | ✅      |
+| Tasks         | ✅      |
+| SLA           | ✅      |
+| Ownership     | ✅      |
+| Escalation    | ✅      |
+| Client Health | ✅      |
+
+---
+
+## Why?
+
+Onboarding delays create:
+
+* poor first impressions,
+* execution friction,
+* churn risk.
+
+---
+
+# 12. Execution & Delivery
+
+## Operational Layers
+
+| O.L               | Active |
+| ----------------- | ------ |
+| Timeline          | ✅      |
+| Notes             | ✅      |
+| Tasks             | ✅      |
+| SLA               | ✅      |
+| Ownership         | ✅      |
+| Escalation        | ✅      |
+| Knowledge Capture | ✅      |
+| Client Health     | ✅      |
+
+---
+
+## Why?
+
+This is the:
+
+# operational core of delivery.
+
+Most collaboration happens here.
+
+---
+
+# 13. Client Success & Growth
+
+## Operational Layers
+
+| O.L               | Active |
+| ----------------- | ------ |
+| Timeline          | ✅      |
+| Notes             | ✅      |
+| Tasks             | ✅      |
+| SLA               | ✅      |
+| Ownership         | ✅      |
+| Escalation        | ✅      |
+| Client Health     | ✅      |
+| Knowledge Capture | ✅      |
+| Reopen Logic      | ✅      |
+
+---
+
+## Why?
+
+This stage manages:
+
+* retention,
+* renewals,
+* expansion,
+* dormant client reactivation,
+* relationship intelligence.
+
+---
+
+# FINAL OPERATIONAL LAYER LOGIC
+
+# UNIVERSAL LAYERS
+
+(Almost everywhere)
+
+| Layer     |
+| --------- |
+| Timeline  |
+| Notes     |
+| Ownership |
+
+These are the foundation of the OS.
+
+---
+
+# HIGH-OPERATIONAL LAYERS
+
+| Layer      |
+| ---------- |
+| Tasks      |
+| SLA        |
+| Escalation |
+
+Used where active execution exists.
+
+---
+
+# INTELLIGENCE LAYERS
+
+| Layer             |
+| ----------------- |
+| Knowledge Capture |
+| Lost Reason       |
+| Client Health     |
+| Reopen Logic      |
+
+Used contextually.
+
+---
+
+# FINAL ARCHITECTURE PRINCIPLE
+
+The 13 stages define:
+
+# customer lifecycle progression.
+
+The Operational Layers define:
+
+# how MergeX operates around each stage.
+
+This is now a properly structured:
+
+# consulting-grade operational architecture.
+
+
+
+
+# MergeX Document System Architecture
+
+# (Finalized Operational Document Flow)
+
+This is the finalized document architecture for [MergeX](https://mergex.in?utm_source=chatgpt.com).
+
+The system is structured around:
+
+* customer lifecycle progression,
+* operational maturity,
+* low-friction sales,
+* scalable consulting delivery,
+* and progressive onboarding.
+
+---
+
+# CORE DOCUMENT PHILOSOPHY
+
+The document system should follow:
+
+# trust progression.
+
+As client commitment increases:
+
+* document depth increases,
+* operational detail increases,
+* information collection increases.
+
+---
+
+# DOCUMENT LAYERS
+
+The complete document system is divided into:
+
+| Layer                      | Purpose                       |
+| -------------------------- | ----------------------------- |
+| Sales Discussion Documents | understanding & communication |
+| Commercial Documents       | pricing & conversion          |
+| Legal Documents            | commitment & protection       |
+| Transition Documents       | sales → execution handoff     |
+| Onboarding Documents       | execution preparation         |
+| Execution Documents        | delivery operations           |
+| Closure Documents          | completion & retention        |
+
+---
+
+# PHASE B — SALES CONVERSION
+
+# (Pre-Execution Document Layer)
+
+---
+
+# 1. Discovery Notes
+
+(Internal)
+
+## Purpose
+
+Capture raw business discussions and observations.
+
+---
+
+## Includes
+
+* pain points
+* opportunities
+* stakeholder insights
+* operational observations
+* discovery findings
+
+---
+
+## Owner
+
+Sales / CX team
+
+---
+
+## Visibility
+
+Internal only
+
+---
+
+# 2. MOM (Minutes of Meeting)
+
+## Purpose
+
+Formalize meeting discussions and next steps.
+
+---
+
+## Includes
+
+* discussion summary
+* agreed points
+* decisions
+* action items
+* next steps
+* meeting attendees
+
+---
+
+## Owner
+
+Meeting owner
+
+---
+
+## Visibility
+
+Internal + optional client sharing
+
+---
+
+# 3. Solution Brief
+
+(Internal Strategic Document)
+
+## Purpose
+
+Convert business problems into MergeX solution direction.
+
+---
+
+## Includes
+
+* problem understanding
+* proposed strategic direction
+* service mapping
+* execution assumptions
+* solution approach
+* pricing assumptions
+
+---
+
+## Owner
+
+Sales / Strategy / Proposal team
+
+---
+
+## Visibility
+
+Internal only
+
+---
+
+# 4. Proposal
+
+## Purpose
+
+Present the recommended business solution.
+
+---
+
+## Includes
+
+* business understanding
+* proposed solution
+* deliverables
+* process
+* methodology
+* timelines
+* expected outcomes
+
+---
+
+## Important
+
+Proposal focuses on:
+
+# value & solution.
+
+NOT heavy pricing breakdowns.
+
+---
+
+## Owner
+
+Proposal manager
+
+---
+
+## Visibility
+
+Client-facing
+
+---
+
+# 5. Quotation / Commercial Estimate
+
+## Purpose
+
+Present pricing and commercial structure.
+
+---
+
+## Includes
+
+* service pricing
+* line items
+* taxes
+* discounts
+* payment terms
+* total project cost
+
+---
+
+## Important
+
+Quotation focuses on:
+
+# commercial clarity.
+
+NOT strategic explanation.
+
+---
+
+## Owner
+
+Proposal / Finance
+
+---
+
+## Visibility
+
+Client-facing
+
+---
+
+# 6. Scope of Work (SOW)
+
+## Purpose
+
+Define:
+
+# what IS included
+
+and
+
+# what is NOT included.
+
+---
+
+## Includes
+
+* deliverables
+* scope boundaries
+* exclusions
+* assumptions
+* revision limits
+* dependencies
+* responsibilities
+
+---
+
+## VERY IMPORTANT
+
+This protects MergeX from:
+
+* scope creep,
+* misunderstandings,
+* delivery disputes.
+
+---
+
+## Owner
+
+Proposal / Delivery team
+
+---
+
+## Visibility
+
+Client-facing
+
+---
+
+# 7. Agreement / Contract
+
+## Purpose
+
+Legally formalize the engagement.
+
+---
+
+## Includes
+
+* terms & conditions
+* obligations
+* confidentiality
+* payment terms
+* termination clauses
+* liability
+* intellectual property rights
+
+---
+
+## Owner
+
+Management / Legal
+
+---
+
+## Visibility
+
+Client-facing
+
+---
+
+# 8. Advance Payment Invoice
+
+## Purpose
+
+Request initial project payment.
+
+---
+
+## Includes
+
+* invoice amount
+* payment breakdown
+* due date
+* payment instructions
+
+---
+
+## Important
+
+MergeX will currently use:
+
+# Advance Invoice ONLY
+
+No separate Proforma Invoice needed initially.
+
+---
+
+## Owner
+
+Finance
+
+---
+
+## Visibility
+
+Client-facing
+
+---
+
+# 9. Payment Confirmation
+
+## Purpose
+
+Confirm:
+
+* payment received,
+* project activation approved.
+
+---
+
+## Includes
+
+* amount received
+* transaction reference
+* confirmation date
+* next steps
+
+---
+
+## Owner
+
+Finance
+
+---
+
+## Visibility
+
+Internal + client confirmation
+
+---
+
+# 10. Engagement Handoff Document
+
+(Critical Internal Transition Document)
+
+## Purpose
+
+Transfer context:
+
+# Sales → Execution Team
+
+---
+
+## Includes
+
+* client summary
+* project summary
+* signed scope
+* commitments made
+* risks
+* timelines
+* stakeholders
+* communication preferences
+* operational notes
+
+---
+
+## VERY IMPORTANT
+
+This prevents:
+
+* execution confusion,
+* broken expectations,
+* delivery misalignment.
+
+---
+
+## Owner
+
+Sales + Engagement Manager
+
+---
+
+## Visibility
+
+Internal only
+
+---
+
+# PHASE C — CLIENT EXECUTION
+
+# (Post-Sales Operational Document Layer)
+
+---
+
+# 11. Unified Client Onboarding
+
+(Externally one experience, internally separated)
+
+This is:
+
+# ONE client onboarding flow
+
+but internally split into:
+
+* Client Information
+* Project Intake
+* Asset & Access Collection
+
+---
+
+# SECTION A — Client Information
+
+(Client-Level Data)
+
+## Purpose
+
+Collect reusable client/business information.
+
+---
+
+## Includes
+
+* company details
+* billing details
+* stakeholders
+* communication preferences
+* finance contact
+* business contacts
+
+---
+
+## Important
+
+This is:
+
+# one-time information.
+
+Future projects should reuse this data.
+
+---
+
+# SECTION B — Project Intake
+
+(Project-Level Data)
+
+## Purpose
+
+Collect engagement-specific operational requirements.
+
+---
+
+## Includes
+
+* project goals
+* deliverables
+* workflows
+* integrations
+* references
+* timelines
+* expectations
+* business requirements
+
+---
+
+## Important
+
+This repeats:
+
+# per project/service.
+
+---
+
+# SECTION C — Assets & Access Collection
+
+## Purpose
+
+Collect operational assets required for execution.
+
+---
+
+## Includes
+
+* credentials
+* hosting access
+* drive access
+* social media access
+* logos/assets
+* brand files
+* APIs/tools
+
+---
+
+## Important
+
+This should be:
+
+# progressive collection.
+
+Do NOT ask everything immediately.
+
+Collect contextually during execution readiness.
+
+---
+
+# 12. Project Kickoff Document
+
+## Purpose
+
+Officially initiate project execution.
+
+---
+
+## Includes
+
+* milestones
+* timelines
+* responsibilities
+* workflow process
+* communication structure
+* escalation path
+* review schedule
+
+---
+
+## Owner
+
+Engagement Manager
+
+---
+
+## Visibility
+
+Internal + client-facing
+
+---
+
+# 13. Progress / Execution Reports
+
+## Purpose
+
+Provide execution visibility and progress tracking.
+
+---
+
+## Includes
+
+* completed work
+* pending work
+* blockers
+* risks
+* upcoming milestones
+* performance updates
+
+---
+
+## Owner
+
+Execution team
+
+---
+
+## Visibility
+
+Internal + client-facing
+
+---
+
+# 14. Change Request Document (CRD)
+
+## Purpose
+
+Manage:
+
+# out-of-scope requests.
+
+---
+
+## Includes
+
+* requested changes
+* impact analysis
+* revised timeline
+* revised pricing
+* approval status
+
+---
+
+## VERY IMPORTANT
+
+Protects:
+
+* delivery stability,
+* timelines,
+* profitability.
+
+---
+
+## Owner
+
+Engagement Manager
+
+---
+
+## Visibility
+
+Internal + client-facing
+
+---
+
+# 15. Completion / Sign-Off Document
+
+## Purpose
+
+Officially confirm project completion.
+
+---
+
+## Includes
+
+* deliverables completed
+* acceptance confirmation
+* closure approval
+* pending items (if any)
+
+---
+
+## Owner
+
+Engagement Manager
+
+---
+
+## Visibility
+
+Client-facing
+
+---
+
+# 16. Renewal / Retainer Proposal
+
+(Optional Future Layer)
+
+## Purpose
+
+Support:
+
+* long-term retainers,
+* renewals,
+* expansion opportunities.
+
+---
+
+## Includes
+
+* ongoing support scope
+* retained services
+* monthly/quarterly engagement plans
+* growth recommendations
+
+---
+
+## Owner
+
+Client Success / Sales
+
+---
+
+## Visibility
+
+Client-facing
+
+---
+
+# FINAL DOCUMENT FLOW
+
+# PHASE B — SALES CONVERSION
+
+---
+
+## Discussion Documents
+
+1. Discovery Notes
+2. MOM
+3. Solution Brief
+
+---
+
+## Solution & Commercial Documents
+
+4. Proposal
+5. Quotation / Commercial Estimate
+6. Scope of Work (SOW)
+
+---
+
+## Legal & Closure Documents
+
+7. Agreement / Contract
+8. Advance Payment Invoice
+9. Payment Confirmation
+
+---
+
+## Transition Document
+
+10. Engagement Handoff Document
+
+---
+
+# PHASE C — CLIENT EXECUTION
+
+---
+
+## Unified Onboarding System
+
+11. Client Information
+12. Project Intake
+13. Assets & Access Collection
+
+(Client experiences this as ONE onboarding flow.)
+
+---
+
+## Execution Documents
+
+14. Project Kickoff Document
+15. Progress / Execution Reports
+16. Change Request Document (CRD)
+
+---
+
+## Closure & Growth Documents
+
+17. Completion / Sign-Off Document
+18. Renewal / Retainer Proposal (optional)
+
+---
+
+# FINAL OPERATIONAL PRINCIPLE
+
+# Internally:
+
+documents are separated by operational purpose.
+
+# Externally:
+
+the client experiences:
+
+* low friction,
+* progressive onboarding,
+* and structured professionalism.
+
+This is now a:
+
+# consulting-grade document architecture
+
+suitable for scaling MergeX operationally.

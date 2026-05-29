@@ -11,22 +11,6 @@ export default async function WorkspacesPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
 
-  // ── Smart redirect: if user has an active brand, go straight to dashboard ──
-  if (user.activeBrandId) {
-    const brand = await db.brand.findUnique({
-      where: { id: user.activeBrandId },
-      select: { slug: true, status: true },
-    });
-    if (brand && brand.status === "active") {
-      redirect(`/workspaces/${brand.slug}/dashboard`);
-    }
-    // Brand is archived or missing — clear activeBrandId so user picks again
-    await db.user.update({
-      where: { id: user.id },
-      data: { activeBrandId: null },
-    });
-  }
-
   // ── Show the workspace hub for explicit selection ──────────────────────────
   const brands = await db.brand.findMany({
     where: { status: "active" },
